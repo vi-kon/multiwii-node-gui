@@ -6,145 +6,189 @@ MultiWiiSerialProtocol = (function () {
     var util = Npm.require('util');
     var EventEmitter = Npm.require('events').EventEmitter;
 
+    /**
+     *
+     * Protocol format
+     * 0           - $
+     * 1           - M
+     * 2           - <!>
+     * 3           - payload length
+     * 4           - no
+     * 5           - code
+     * 6-length    - payload
+     * 7+length+1  - crc
+     *
+     * @constructor
+     */
+    function TcpProtocol() {
+        this._data = [];
+    }
+
+    /**
+     *
+     * @param {Buffer} data - payload
+     * @returns {*}
+     */
+    TcpProtocol.prototype.unserialize = function (data) {
+        var i, length, id, code, crc, offset, valid, error;
+
+        for (i = 0; i < data.length; i = i + 1) {
+            this._data[this._data.length] = data.readUInt8(i);
+        }
+
+        valid = false;
+        offset = 0;
+        while (offset < this._data.length) {
+            if (this._data[offset] !== 36) {
+                offset = offset + 1;
+                error = 'No beginning "$" char';
+            } else if (this._data[offset + 1] !== 77) {
+                offset = offset + 2;
+                error = 'No beginning "M" char';
+            } else if (this._data[offset + 2] !== 62) {
+                offset = offset + 3;
+                error = 'No beginning ">" char';
+            } else if (this._data[offset + 3] <= this._data.length - 6 - offset) {
+                length = this._data[offset + 3];
+                id = this._data[offset + 4];
+                code = this._data[offset + 5];
+                crc = 0x00 ^ length ^ code;
+
+                for (i = 0; i < length; i = i + 1) {
+                    crc ^= this._data[offset + 6 + i];
+                }
+
+                if (crc !== this._data[offset + 6 + length]) {
+                    offset = offset + 6 + length;
+                    error = 'CRC error';
+                    break;
+                }
+
+                data = new Buffer(length);
+                for (i = 0; i < length; i = i + 1) {
+                    data.writeUInt8(this._data[offset + 6 + i], i);
+                }
+
+                valid = true;
+                offset = offset + 6 + length + 1;
+            } else {
+                error = 'Data length is less then payload length';
+                break;
+            }
+        }
+
+        this._data = this._data.slice(offset);
+
+        if (valid) {
+            return {
+                valid : true,
+                length: length,
+                id    : id,
+                code  : code,
+                data  : data
+            };
+        }
+
+        return {
+            valid: false,
+            error: error
+        };
+    };
+
+    /**
+     *
+     * @param {int}         id     - package identifier
+     * @param {int}         code   - command code
+     * @param {Buffer|null} [data] - payload
+     * @returns {Buffer}
+     */
+    TcpProtocol.prototype.serialize = function (id, code, data) {
+        var i, length, crc, buffer;
+
+        length = data === undefined || data === null ? 0 : data.length;
+
+        buffer = new Buffer(7 + length);
+        buffer.write('$M<');
+        buffer.writeUInt8(length, 3);
+        buffer.writeUInt8(id, 4);
+        buffer.writeUInt8(code, 5);
+
+        crc = 0x00 ^ length ^ code;
+        for (i = 0; i < length; i = i + 1) {
+            crc ^= data.readUInt8(i);
+            buffer.writeUInt8(data.readUInt8(i), i + 6);
+        }
+        buffer.writeUInt8(crc, buffer.length - 1);
+
+        return buffer;
+    };
+
+
+    /**
+     *
+     * @param {Socket} socket
+     * @constructor
+     */
     function PackageManager(socket) {
         var self, data;
 
         self = this;
         data = [];
 
+        this._lastId = 0;
+        this._tcpProtocol = new TcpProtocol();
         this._socket = socket;
-        this._queue = [];
-        this._processing = false;
-        this._current = null;
-        this._timeout = null;
+        this._queue = {};
 
-        function getMSPPackage(data) {
-            var i, j, length, code, crc, buffer;
-            for (i = 0; i < data.length; i) {
-                if (data[i] !== 36) {
-                    i = i + 1;
-                } else if (data[i + 1] !== 77) {
-                    i = i + 2;
-                } else if (data[i + 2] !== 62) {
-                    i = i + 3;
-                } else if (data[i + 3] <= data.length - 6 - i) {
-                    length = data[i + 3];
-                    code = data[i + 4];
-                    crc = 0x00 ^ length ^ code;
-                    for (j = 0; j < length; j = j + 1) {
-                        crc ^= data[i + j + 5];
-                    }
-                    if (crc !== data[i + 5 + length]) {
-                        i = i + 5 + length;
-                    } else {
-                        buffer = new Buffer(length);
-                        for (j = 0; j < length; j = j + 1) {
-                            buffer.writeUInt8(data[i + j + 5], j);
-                        }
-                        return {
-                            offset: i + 5 + length + 1,
-                            valid : true,
-                            code  : code,
-                            data  : buffer
-                        };
-                    }
-                } else {
-                    break;
-                }
+        this._socket.on('data', function (data) {
+            var result;
+
+            result = self._tcpProtocol.unserialize(data);
+
+            if (result.valid) {
+                clearTimeout(self._queue[result.id].timeout);
+                self._queue[result.id].callback(null, result.data);
+                delete self._queue[result.id];
             }
-
-            return {
-                offset: i,
-                valid : false
-            };
-        }
-
-        this._socket.on('data', function (buffer) {
-            var i, mspPackage;
-
-            //console.log(buffer);
-
-            if (!self._current) {
-                return;
-            }
-
-            for (i = 0; i < buffer.length; i = i + 1) {
-                data[data.length] = buffer.readUInt8(i);
-            }
-
-            mspPackage = getMSPPackage(data);
-            data = data.slice(mspPackage.offset);
-
-            if (mspPackage.valid) {
-                //console.log('PM: Package received');
-
-                clearTimeout(self._timeout);
-                self._current.callback(null, mspPackage.data);
-                self.processQueue();
-            }
-        });
-
-        this._socket.on('drain', function () {
-            if (self._current) {
-                self._timeout = setTimeout(function () {
-                    //console.log('PM: Timeout reached');
-                    self.processQueue();
-                }, self._current.wait);
-            }
-        });
-
-        this._socket.on('close', function () {
-
         });
     }
 
-    PackageManager.prototype.send = function (code, data, callback, wait) {
-        this._queue.push({
-                             code    : code,
-                             data    : data,
-                             callback: callback,
-                             wait    : wait === undefined ? 1000 : wait
-                         });
+    PackageManager.prototype.getNextId = function () {
+        var i = this._lastId;
 
-        //console.log('PM: #' + code + ' command added to _queue (' + this._queue.length + ')');
-        if (this._processing) {
-            return;
-        }
+        do {
+            if (i === 255) {
+                i = 0;
+            } else {
+                i++;
+            }
+            if (!this._queue.hasOwnProperty(i)) {
+                this.lastId = i;
+                break;
+            }
+        } while (i !== this._lastId);
 
-        this._processing = true;
-        this.processQueue();
+        return this.lastId;
     };
 
-    PackageManager.prototype.processQueue = function () {
-        //console.log('PM: Queue ' + this._queue.length);
-
-        var self, i, buffer, length, crc;
-
-        self = this;
-
-        self._current = this._queue.shift();
-        if (!self._current) {
-            self._processing = false;
-            return;
-        }
-
-        length = self._current.data === null || self._current.data === undefined ? 0 : self._current.data.length;
-
-        buffer = new Buffer(6 + length);
-        buffer.write('$M<');
-        buffer.writeUInt8(length, 3);
-        buffer.writeUInt8(self._current.code, 4);
-
-        crc = 0x00 ^ length ^ self._current.code;
-        for (i = 0; i < length; i++) {
-            crc ^= self._current.data.readUInt8(i);
-            buffer.writeUInt8(self._current.data.readUInt8(i), i + 5);
-        }
-        buffer.writeUInt8(crc, buffer.length - 1);
-
-        self._socket.write(buffer);
-
-        //console.log('PM: Package sent');
+    /**
+     *
+     * Register package in processing queue
+     *
+     * @param {int} code         - code NO
+     * @param {Buffer|null} data - data buffer or null if no data
+     * @param callback           - callback function for response
+     * @param {int} [wait=5000]  - timeout for response
+     */
+    PackageManager.prototype.send = function (code, data, callback, wait) {
+        var id = this.getNextId();
+        this._queue[id] = {
+            callback: callback,
+            timeout : setTimeout(function () {
+                callback('Timeout reach');
+            }, wait === undefined ? 5000 : wait)
+        };
+        this._socket.write(this._tcpProtocol.serialize(id, code, data));
     };
 
     function Protocol(packageManager) {
@@ -687,8 +731,6 @@ MultiWiiSerialProtocol = (function () {
         this._timeout = null;
         this._cycleFunction = function () {
             Fiber(function () {
-                var start = new Date().getTime();
-
                 self._lastData = {
                     time    : new Date().getTime(),
                     status  : self._protocol.status(),
@@ -709,8 +751,6 @@ MultiWiiSerialProtocol = (function () {
                 } else {
                     self._timeout = null;
                 }
-                //console.log(self._lastData);
-                console.log('Cyc time: ' + (new Date().getTime() - start));
             }).run();
         };
 
