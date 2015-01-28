@@ -1,0 +1,100 @@
+<template name="home">
+    <div class="home">
+
+        <div class="form-inline text-right">
+            {{#if isTabActive 'tab-settings'}}
+            <div class="input-group">
+                <div class="btn-group js-btn-group-tab-settings">
+                    <button class="btn btn-default js-btn-read-settings" type="button">
+                        <i class="glyphicon glyphicon-floppy-save"></i>
+                        Read settings
+                    </button>
+                    <button class="btn btn-danger js-btn-write-settings" type="button">
+                        <i class="glyphicon glyphicon-floppy-open"></i>
+                        Write settings
+                    </button>
+                </div>
+            </div>
+            {{/if}}
+
+            <div class="input-group">
+                {{#unless mspConnectedDevice}}
+                <select class="form-control js-select-devices">
+                    {{#each mspOpenedDeviceNames}}
+                    <option value="{{name}}">{{name}} (v{{version}})</option>
+                    {{else}}
+                    <option>No available device</option>
+                    {{/each}}
+                </select>
+                {{/unless}}
+
+                <div class="input-group-btn">
+                    {{#if mspConnectedDevice}}
+                    <button class="btn btn-danger js-btn-disconnect" type="button">
+                        <i class="glyphicon glyphicon-transfer"></i>
+                        Disconnect
+                    </button>
+                    {{else}}
+                    <button class="btn btn-default js-btn-refresh-devices-list" type="button">
+                        <i class="glyphicon glyphicon-refresh"></i>
+                        Refresh
+                    </button>
+                    <button class="btn btn-primary js-btn-connect" type="button">
+                        <i class="glyphicon glyphicon-transfer"></i>
+                        Connect
+                    </button>
+                    {{/if}}
+                </div>
+            </div>
+        </div>
+
+        <div role="tabpanel">
+            <ul class="nav nav-tabs" role="tablist">
+                <li role="presentation" class="active">
+                    <a href="#tab-general" aria-controls="tab-general" role="tab" data-toggle="tab">
+                        <i class="glyphicon glyphicon-home"></i>
+                        General
+                    </a>
+                </li>
+                <li role="presentation">
+                    <a href="#tab-mission" aria-controls="tab-mission" role="tab" data-toggle="tab">
+                        <i class="glyphicon glyphicon-map-marker"></i>
+                        Mission
+                    </a>
+                </li>
+                <li role="presentation">
+                    <a href="#tab-sensor-graph" aria-controls="tab-sensor-graph" role="tab" data-toggle="tab">
+                        <i class="glyphicon glyphicon-tasks"></i>
+                        Sensor Graph
+                    </a>
+                </li>
+                <li role="presentation">
+                    <a href="#tab-settings" aria-controls="tab-settings" role="tab" data-toggle="tab">
+                        <i class="glyphicon glyphicon-cog"></i>
+                        Settings
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <div class="tab-content">
+
+            <div id="tab-general" class="tab-pane active" role="tabpanel">
+                {{> homeTabGeneral }}
+
+            </div>
+
+            <div id="tab-mission" class="tab-pane" role="tabpanel">
+
+            </div>
+
+            <div id="tab-sensor-graph" class="tab-pane" role="tabpanel">
+                {{> homeTabSensorGraph }}
+            </div>
+
+            <div id="tab-settings" class="tab-pane" role="tabpanel">
+                {{> homeTabSettings }}
+            </div>
+        </div>
+    </div>
+</template>

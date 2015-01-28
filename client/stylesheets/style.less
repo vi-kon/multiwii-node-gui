@@ -1,0 +1,40 @@
+// Import Vendors
+@import "vendor/custom.bootstrap.mixins.import.less";
+@import "vendor/custom.bootstrap.import.less";
+// Components
+@import "components/a_component.import.less";
+// Globals
+@import "typo.import.less";
+// Sites
+@import "sites/home.import.less";
+
+.input-group {
+  margin-bottom: 10px;
+
+  .input-group-btn:not(:first-child):not(:last-child) .btn {
+    border-radius: 0;
+    margin-right: -1px;
+  }
+}
+
+.chart-label-line {
+  width: 20px;
+  height: 5px;
+  display: inline-block;
+  margin-bottom: 2px;
+  border-radius: 2px;
+}
+
+.chart-label {
+  display: inline-block;
+  width: 50px;
+}
+
+canvas {
+  width: 100% !important;
+}
+
+.home .pid .input-group-addon {
+  width: 35px;
+  text-align: center;
+}

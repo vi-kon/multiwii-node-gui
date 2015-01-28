@@ -1,0 +1,232 @@
+<template name="homeTabSensorGraph">
+    <div class="row">
+        <div class="col-sm-6">
+            <h1>Mixed sensor graph</h1>
+            <hr/>
+
+            <div class="row">
+                <div class="col-sm-9">
+                    <canvas id="tab-sensor-graph-mixed"></canvas>
+                </div>
+
+                <div class="col-sm-3">
+                    <strong>Accelerometer</strong>
+
+                    <div class="checkbox">
+                        <label>
+                            <input type="checkbox">
+                            <span class="chart-label-line" style="background: #1f77b4"></span>
+                            <span class="chart-label">Roll</span>
+                            <span class="chart-acc-roll">{{rawImu "acc" "x"}}</span>
+                        </label>
+                    </div>
+                    <div class="checkbox">
+                        <label>
+                            <input type="checkbox">
+                            <span class="chart-label-line" style="background: #ff7f0e"></span>
+                            <span class="chart-label">Pitch</span>
+                            <span class="chart-acc-pitch">{{rawImu "acc" "y"}}</span>
+                        </label>
+                    </div>
+                    <div class="checkbox">
+                        <label>
+                            <input type="checkbox">
+                            <span class="chart-label-line" style="background: #2ca02c"></span>
+                            <span class="chart-label">Z</span>
+                            <span class="chart-acc-z">{{rawImu "acc" "z"}}</span>
+                        </label>
+                    </div>
+
+                    <strong>Gyroscope</strong>
+
+                    <div class="checkbox">
+                        <label>
+                            <input type="checkbox">
+                            <span class="chart-label-line" style="background: #d62728"></span>
+                            <span class="chart-label">Roll</span>
+                            <span class="chart-gyro-roll">{{rawImu "gyro" "x"}}</span>
+                        </label>
+                    </div>
+                    <div class="checkbox">
+                        <label>
+                            <input type="checkbox">
+                            <span class="chart-label-line" style="background: #9467bd"></span>
+                            <span class="chart-label">Pitch</span>
+                            <span class="chart-gyro-pitch">{{rawImu "gyro" "y"}}</span>
+                        </label>
+                    </div>
+                    <div class="checkbox">
+                        <label>
+                            <input type="checkbox">
+                            <span class="chart-label-line" style="background: #8c564b"></span>
+                            <span class="chart-label">Yaw</span>
+                            <span class="chart-gyro-yaw">{{rawImu "gyro" "z"}}</span>
+                        </label>
+                    </div>
+
+                    <strong>Magnetometer</strong>
+
+                    <div class="checkbox">
+                        <label>
+                            <input type="checkbox">
+                            <span class="chart-label-line" style="background: #e377c2"></span>
+                            <span class="chart-label">Roll</span>
+                            <span class="chart-mag-roll">{{rawImu "mag" "x"}}</span>
+                        </label>
+                    </div>
+                    <div class="checkbox">
+                        <label>
+                            <input type="checkbox">
+                            <span class="chart-label-line" style="background: #7f7f7f"></span>
+                            <span class="chart-label">Pitch</span>
+                            <span class="chart-mag-pitch">{{rawImu "mag" "y"}}</span>
+                        </label>
+                    </div>
+                    <div class="checkbox">
+                        <label>
+                            <input type="checkbox">
+                            <span class="chart-label-line" style="background: #bcbd22"></span>
+                            <span class="chart-label">Yaw</span>
+                            <span class="chart-mag-yaw">{{rawImu "mag" "z"}}</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <!-- .row -->
+        </div>
+        <div class="col-sm-6">
+            <h1>Live RC data</h1>
+            <hr/>
+
+            <div class="row">
+                <label class="col-sm-2 control-label">Throttle</label>
+
+                <div class="col-sm-2"><span class="rc-throttle">{{rc 'throttle'}}</span></div>
+
+                <div class="col-sm-8">
+                    <div class="progress">
+                        <div class="progress-bar rc-throttle-progressbar" role="progressbar" aria-valuemin="1000"
+                             aria-valuemax="2000" aria-valuenow="{{rc 'throttle'}}"
+                             style="width: {{rcPercentage 'throttle'}}%;"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <label class="col-sm-2 control-label">Pitch</label>
+
+                <div class="col-sm-2"><span class="rc-pitch">{{rc 'pitch'}}</span></div>
+
+                <div class="col-sm-8">
+                    <div class="progress">
+                        <div class="progress-bar rc-pitch-progressbar" role="progressbar" aria-valuemin="1000"
+                             aria-valuemax="2000" aria-valuenow="{{rc 'pitch'}}"
+                             style="width: {{rcPercentage 'pitch'}}%;"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <label class="col-sm-2 control-label">Roll</label>
+
+                <div class="col-sm-2"><span class="rc-roll">{{rc 'roll'}}</span></div>
+
+                <div class="col-sm-8">
+                    <div class="progress">
+                        <div class="progress-bar rc-roll-progressbar" role="progressbar" aria-valuemin="1000"
+                             aria-valuemax="2000" aria-valuenow="{{rc 'roll'}}"
+                             style="width: {{rcPercentage 'roll'}}%;"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <label class="col-sm-2 control-label">Yaw</label>
+
+                <div class="col-sm-2"><span class="rc-yaw">{{rc 'yaw'}}</span></div>
+
+                <div class="col-sm-8">
+                    <div class="progress">
+                        <div class="progress-bar rc-yaw-progressbar" role="progressbar" aria-valuemin="1000"
+                             aria-valuemax="2000" aria-valuenow="{{rc 'yaw'}}"
+                             style="width: {{rcPercentage 'yaw'}}%;"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <label class="col-sm-2 control-label">Aux 1</label>
+
+                <div class="col-sm-2"><span class="rc-aux1">{{rc 'aux1'}}</span></div>
+
+                <div class="col-sm-8">
+                    <div class="progress">
+                        <div class="progress-bar rc-aux1-progressbar" role="progressbar" aria-valuemin="1000"
+                             aria-valuemax="2000" aria-valuenow="{{rc 'aux1'}}"
+                             style="width: {{rcPercentage 'aux1'}}%;"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <label class="col-sm-2 control-label">Aux 2</label>
+
+                <div class="col-sm-2"><span class="rc-aux2">{{rc 'aux2'}}</span></div>
+
+                <div class="col-sm-8">
+                    <div class="progress">
+                        <div class="progress-bar rc-aux2-progressbar" role="progressbar" aria-valuemin="1000"
+                             aria-valuemax="2000" aria-valuenow="{{rc 'aux2'}}"
+                             style="width: {{rcPercentage 'aux2'}}%;"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <label class="col-sm-2 control-label">Aux 3</label>
+
+                <div class="col-sm-2"><span class="rc-aux3">{{rc "aux3"}}</span></div>
+
+                <div class="col-sm-8">
+                    <div class="progress">
+                        <div class="progress-bar rc-aux3-progressbar" role="progressbar" aria-valuemin="1000"
+                             aria-valuemax="2000" aria-valuenow="{{rc 'aux3'}}"
+                             style="width: {{rcPercentage 'aux3'}}%;"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <label class="col-sm-2 control-label">Aux 4</label>
+
+                <div class="col-sm-2"><span class="rc-aux4">{{rc 'aux4'}}</span></div>
+
+                <div class="col-sm-8">
+                    <div class="progress">
+                        <div class="progress-bar rc-aux4-progressbar" role="progressbar" aria-valuemin="1000"
+                             aria-valuemax="2000" aria-valuenow="{{rc 'aux4'}}"
+                             style="width: {{rcPercentage 'aux4'}}%;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- .row -->
+
+    <hr/>
+
+    <div class="row">
+        <div class="col-sm-3">
+            <strong>Accelerometer</strong>
+            <canvas id="tab-sensor-graph-acc"></canvas>
+        </div>
+        <div class="col-sm-3">
+            <strong>Gyroscope</strong>
+            <canvas id="tab-sensor-graph-gyro"></canvas>
+        </div>
+        <div class="col-sm-3">
+            <strong>Magnetometer</strong>
+            <canvas id="tab-sensor-graph-mag"></canvas>
+        </div>
+    </div>
+</template>
