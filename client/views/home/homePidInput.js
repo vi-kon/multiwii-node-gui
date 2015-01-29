@@ -1,68 +1,29 @@
 (function ($, undefined) {
     "use strict";
 
-    var inc = function (selector, template, max, step, round) {
-        var input, value;
+    var inc, dec, change;
 
-        input = $(template.find(selector));
-
-        value = parseFloat(input.val()) + step;
-        if (value > max) {
-            value = max;
-        }
-
-        input.val(value.toFixed(round));
-    };
-
-    var dec = function (selector, template, min, step, round) {
-        var input, value;
-
-        input = $(template.find(selector));
-
-        value = parseFloat(input.val()) - step;
-        if (value < min) {
-            value = min;
-        }
-
-        input.val(value.toFixed(round));
-    };
-
-    var change = function (selector, template, min, max, round) {
-        var input, value;
-
-        input = $(template.find(selector));
-
-        value = parseFloat(input.val());
-        if (value < min) {
-            value = min;
-        } else if (value > max) {
-            value = max;
-        }
-
-        input.val(value.toFixed(round));
-    };
-
-
-    Template.homePidInput.helpers({
-                                      mspPidSettingP: function (type) {
-                                          if (Session.get('mspPid') === undefined) {
-                                              return (0).toFixed(1);
-                                          }
-                                          return (Session.get('mspPid')[type].p / 10).toFixed(1);
-                                      },
-                                      mspPidSettingI: function (type) {
-                                          if (Session.get('mspPid') === undefined) {
-                                              return (0).toFixed(3);
-                                          }
-                                          return (Session.get('mspPid')[type].i / 1000).toFixed(3);
-                                      },
-                                      mspPidSettingD: function (type) {
-                                          if (Session.get('mspPid') === undefined) {
-                                              return 0;
-                                          }
-                                          return Session.get('mspPid')[type].d;
-                                      }
-                                  });
+    Template.homePidInput.helpers(
+        {
+            mspPidSettingP: function (type) {
+                if (Session.get('mspPid') === undefined) {
+                    return (0).toFixed(1);
+                }
+                return (Session.get('mspPid')[type].p / 10).toFixed(1);
+            },
+            mspPidSettingI: function (type) {
+                if (Session.get('mspPid') === undefined) {
+                    return (0).toFixed(3);
+                }
+                return (Session.get('mspPid')[type].i / 1000).toFixed(3);
+            },
+            mspPidSettingD: function (type) {
+                if (Session.get('mspPid') === undefined) {
+                    return 0;
+                }
+                return Session.get('mspPid')[type].d;
+            }
+        });
 
     Template.homePidInput.events(
         {
@@ -96,4 +57,45 @@
                 change('input[name$=_d]', template, 0, 100, 0);
             }
         });
+
+    inc = function (selector, template, max, step, round) {
+        var input, value;
+
+        input = $(template.find(selector));
+
+        value = parseFloat(input.val()) + step;
+        if (value > max) {
+            value = max;
+        }
+
+        input.val(value.toFixed(round));
+    };
+
+    dec = function (selector, template, min, step, round) {
+        var input, value;
+
+        input = $(template.find(selector));
+
+        value = parseFloat(input.val()) - step;
+        if (value < min) {
+            value = min;
+        }
+
+        input.val(value.toFixed(round));
+    };
+
+    change = function (selector, template, min, max, round) {
+        var input, value;
+
+        input = $(template.find(selector));
+
+        value = parseFloat(input.val());
+        if (value < min) {
+            value = min;
+        } else if (value > max) {
+            value = max;
+        }
+
+        input.val(value.toFixed(round));
+    };
 }(jQuery));

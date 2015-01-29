@@ -17,8 +17,20 @@
             </div>
             {{/if}}
 
+            {{#if mspConnectedDevice}}
             <div class="input-group">
-                {{#unless mspConnectedDevice}}
+                <span class="input-group-addon">Cycle time {{mspCycleTime}}ms</span>
+                <span class="input-group-addon">Connected to {{mspConnectedDevice}}</span>
+
+                <div class="input-group-btn">
+                    <button class="btn btn-danger js-btn-disconnect" type="button">
+                        <i class="glyphicon glyphicon-transfer"></i>
+                        Disconnect
+                    </button>
+                </div>
+            </div>
+            {{else}}
+            <div class="input-group">
                 <select class="form-control js-select-devices">
                     {{#each mspOpenedDeviceNames}}
                     <option value="{{name}}">{{name}} (v{{version}})</option>
@@ -26,15 +38,8 @@
                     <option>No available device</option>
                     {{/each}}
                 </select>
-                {{/unless}}
 
                 <div class="input-group-btn">
-                    {{#if mspConnectedDevice}}
-                    <button class="btn btn-danger js-btn-disconnect" type="button">
-                        <i class="glyphicon glyphicon-transfer"></i>
-                        Disconnect
-                    </button>
-                    {{else}}
                     <button class="btn btn-default js-btn-refresh-devices-list" type="button">
                         <i class="glyphicon glyphicon-refresh"></i>
                         Refresh
@@ -43,9 +48,9 @@
                         <i class="glyphicon glyphicon-transfer"></i>
                         Connect
                     </button>
-                    {{/if}}
                 </div>
             </div>
+            {{/if}}
         </div>
 
         <div role="tabpanel">
@@ -57,9 +62,9 @@
                     </a>
                 </li>
                 <li role="presentation">
-                    <a href="#tab-mission" aria-controls="tab-mission" role="tab" data-toggle="tab">
-                        <i class="glyphicon glyphicon-map-marker"></i>
-                        Mission
+                    <a href="#tab-map" aria-controls="tab-map" role="tab" data-toggle="tab">
+                        <i class="glyphicon glyphicon-globe"></i>
+                        Map
                     </a>
                 </li>
                 <li role="presentation">
@@ -79,13 +84,12 @@
 
         <div class="tab-content">
 
-            <div id="tab-general" class="tab-pane active" role="tabpanel">
+            <div id="tab-general" class="tab-pane" role="tabpanel">
                 {{> homeTabGeneral }}
-
             </div>
 
-            <div id="tab-mission" class="tab-pane" role="tabpanel">
-
+            <div id="tab-map" class="tab-pane" role="tabpanel">
+                {{> homeTabMap }}
             </div>
 
             <div id="tab-sensor-graph" class="tab-pane" role="tabpanel">

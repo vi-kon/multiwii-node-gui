@@ -1,0 +1,33 @@
+<template name="homeTabMap">
+    <div class="row">
+        <div class="col-sm-9">
+            <h2>Map</h2>
+            <hr/>
+
+            <div id="map-canvas" style="height: 500px;"></div>
+        </div>
+        <div class="col-sm-3">
+            <h2>Details</h2>
+            <hr/>
+
+            <div class="row">
+                <div class="col-sm-9">
+                    <div>
+                        <span class="map-label">Latitude</span> {{mspGpsLatitude}}&deg;
+                    </div>
+                    <div>
+                        <span class="map-label">Longitude</span> {{mspGpsLongitude}}&deg;
+                    </div>
+                    <div>
+                        <span class="map-label">Altitude</span> {{mspGpsAltitude}}m
+                    </div>
+                </div>
+                <div class="col-sm-3 text-right">
+                    <button class="btn btn-default js-btn-center-map">
+                        <i class="glyphicon glyphicon-map-marker"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>

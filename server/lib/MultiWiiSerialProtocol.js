@@ -728,9 +728,12 @@ MultiWiiSerialProtocol = (function () {
 
         this._updating = false;
         this._log = [];
-        this._timeout = null;
         this._cycleFunction = function () {
             Fiber(function () {
+                var start;
+
+                start = new Date().getTime();
+
                 self._lastData = {
                     time    : new Date().getTime(),
                     status  : self._protocol.status(),
@@ -742,6 +745,7 @@ MultiWiiSerialProtocol = (function () {
                     altitude: self._protocol.altitude(),
                     analog  : self._protocol.analog()
                 };
+                self._lastData.cycleTime = new Date().getTime() - start;
                 self._log.push(self._lastData);
 
                 self.emit('update', self._lastData);

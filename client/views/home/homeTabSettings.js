@@ -1,21 +1,7 @@
 (function ($, undefined) {
     "use strict";
 
-    var readPid = function (callback) {
-        if (Session.get('mspConnectedDevice')) {
-            Meteor.call('mspPid', Session.get('mspConnectedDevice'), function (error, response) {
-                Session.set('mspPid', response);
-
-                notify('PID settings read', 'success');
-            });
-        } else {
-            notify('No device connected', 'error');
-        }
-
-        if (callback !== undefined && callback !== null) {
-            callback();
-        }
-    };
+    var readPid;
 
     Template.home.events(
         {
@@ -32,4 +18,19 @@
                 });
             }
         });
+
+    readPid = function (callback) {
+        if (Session.get('mspConnectedDevice')) {
+            Meteor.call('mspPid', Session.get('mspConnectedDevice'), function (error, response) {
+                Session.set('mspPid', response);
+                notify('PID settings read', 'success');
+            });
+        } else {
+            notify('No device connected', 'error');
+        }
+
+        if (callback !== undefined && callback !== null) {
+            callback();
+        }
+    };
 }(jQuery));
