@@ -1,7 +1,7 @@
 (function () {
     "use strict";
 
-    var stream, activeProtocol;
+    var stream, mspConnectedDeviceName;
 
     Template.home.helpers(
         {
@@ -9,7 +9,7 @@
                 return Session.get('activeTab') === '#' + tab;
             },
             mspConnectedDevice  : function () {
-                return Session.get('mspConnectedDevice');
+                return Session.get('mspConnectedDeviceName');
             },
             mspOpenedDeviceNames: function () {
                 return Session.get('mspOpenedDeviceNames');
@@ -21,25 +21,35 @@
 
     Template.home.events(
         {
-            "click .js-btn-refresh-devices-list": function () {
+            "click .js-btn-refresh-devices-list": function (e) {
+                $(e.target).button('loading');
                 Meteor.call('mspOpenedProtocolNames', function (error, response) {
                     Session.set('mspOpenedDeviceNames', response);
                     notify('Device list refreshed', 'success');
+                    $(e.target).button('reset');
                 });
             },
-            "click .js-btn-connect"             : function () {
+            "click .js-btn-connect"             : function (e) {
                 var value = $('.js-select-devices').val();
                 if (value) {
-                    Session.set('mspConnectedDevice', value);
-                    notify('Device ' + value + ' connected', 'success');
+                    $(e.target).button('loading');
+                    Meteor.call('mspIsConnected', value, function (error, response) {
+                        if (response) {
+                            Session.set('mspConnectedDeviceName', value);
+                            notify('Device ' + value + ' connected', 'success');
+                        } else {
+                            notify('Connection lost', 'error');
+                        }
+                        $(e.target).button('reset');
+                    });
                 } else {
                     notify('No available device for connection', 'error');
                 }
             },
             "click .js-btn-disconnect"          : function () {
-                if (Session.get('mspConnectedDevice')) {
-                    notify('Device ' + Session.get('mspConnectedDevice') + ' disconnected', 'success');
-                    Session.set('mspConnectedDevice', null);
+                if (Session.get('mspConnectedDeviceName')) {
+                    notify('Device ' + Session.get('mspConnectedDeviceName') + ' disconnected', 'success');
+                    Session.set('mspConnectedDeviceName', null);
                 }
             }
         });
@@ -69,17 +79,25 @@
         });
     };
 
-    activeProtocol = null;
+    mspConnectedDeviceName = null;
     stream = new Meteor.Stream('msp');
+
+    stream.on('close', function (deviceName) {
+        if (mspConnectedDeviceName === deviceName) {
+            Session.set('mspConnectedDeviceName', null);
+            notify('Connection lost', 'error');
+        }
+    });
+
     Tracker.autorun(function () {
-        if (Session.get('mspConnectedDevice')) {
-            stream.on('update' + Session.get('mspConnectedDevice'), function (data) {
+        if (Session.get('mspConnectedDeviceName')) {
+            mspConnectedDeviceName = Session.get('mspConnectedDeviceName');
+            stream.on('update' + mspConnectedDeviceName, function (data) {
                 Session.set('mspActualData', data);
             });
-            activeProtocol = Session.get('mspConnectedDevice');
-        } else if (activeProtocol !== null) {
-            stream.removeAllListeners('update' + activeProtocol);
-            activeProtocol = null;
+        } else if (mspConnectedDeviceName !== null) {
+            stream.removeAllListeners('update' + mspConnectedDeviceName);
+            mspConnectedDeviceName = null;
         }
     });
 }());

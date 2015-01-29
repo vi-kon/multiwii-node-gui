@@ -70,16 +70,16 @@
                     {{#each mspOpenedDeviceNames}}
                     <option value="{{name}}">{{name}} (v{{version}})</option>
                     {{else}}
-                    <option>No available device</option>
+                    <option value="">No available device</option>
                     {{/each}}
                 </select>
 
                 <div class="input-group-btn">
-                    <button class="btn btn-default js-btn-refresh-devices-list" type="button">
+                    <button class="btn btn-default js-btn-refresh-devices-list" data-loading-text="<i class='glyphicon glyphicon-refresh'></i> Refreshing" type="button">
                         <i class="glyphicon glyphicon-refresh"></i>
                         Refresh
                     </button>
-                    <button class="btn btn-primary js-btn-connect" type="button">
+                    <button class="btn btn-primary js-btn-connect" data-loading-text="<i class='glyphicon glyphicon-off'></i> Connecting..." type="button">
                         <i class="glyphicon glyphicon-off"></i>
                         Connect
                     </button>

@@ -32,6 +32,7 @@ mspOpenedProtocols = {};
 
                 socket.on('close', function () {
                     mspOpenedProtocols[key].disconnect();
+                    stream.emit('close', key);
                     console.log('SERV: Client disconnected');
                 });
 
