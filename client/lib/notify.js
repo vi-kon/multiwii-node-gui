@@ -1,12 +1,12 @@
 notify = function (text, type) {
     noty({
-             layout   : 'topRight',
+             layout   : 'topCenter',
              theme    : 'relax',
              type     : type === undefined ? 'alert' : type,
              text     : text,
              animation: {
-                 open : 'animated fadeInRight',
-                 close: 'animated fadeOutRight'
+                 open : 'animated fadeInDown',
+                 close: 'animated fadeOutUp'
              },
              timeout  : 5000
          });
