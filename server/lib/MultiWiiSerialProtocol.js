@@ -231,10 +231,10 @@ MultiWiiSerialProtocol = (function () {
         return this.send(101, null, function (data) {
             return {
                 cycleTime           : data.readUInt16LE(0),
-                i2cErrorCount       : data.readUInt16LE(1),
-                sensorPresent       : data.readUInt16LE(2),
-                boxActivation       : data.readUInt32LE(3),
-                currentSettingNumber: data.readUInt8(4)
+                i2cErrorCount       : data.readUInt16LE(2),
+                sensorPresent       : data.readUInt16LE(4),
+                boxActivation       : data.readUInt32LE(6),
+                currentSettingNumber: data.readUInt8(10)
             };
         }, callback);
     };
