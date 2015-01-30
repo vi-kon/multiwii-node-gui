@@ -1,8 +1,7 @@
-MultiWiiSerialProtocol = (function () {
+MultiWiiSerialProtocol = function () {
     "use strict";
 
     var Future = Npm.require('fibers/future');
-    var Fiber = Npm.require('fibers');
     var util = Npm.require('util');
     var EventEmitter = Npm.require('events').EventEmitter;
 
@@ -18,19 +17,60 @@ MultiWiiSerialProtocol = (function () {
      * 6-length    - payload
      * 7+length+1  - crc
      *
+     * @param {int} type - protocol type (request, response)
      * @constructor
      */
-    function TcpProtocol() {
+    function TcpProtocol(type) {
         this._data = [];
+        this._type = type;
     }
+
+    TcpProtocol.type = {
+        REQUEST : 1,
+        RESPONSE: 2
+    };
 
     /**
      *
-     * @param {Buffer} data - payload
-     * @returns {*}
+     * @param {int}    id   - package identifier
+     * @param {int}    code - package code
+     * @param {Buffer} data - package payload
+     * @returns {Buffer}
+     */
+    TcpProtocol.prototype.serialize = function (id, code, data) {
+        var i, length, crc, buffer;
+
+        length = data === undefined || data === null ? 0 : data.length;
+
+        buffer = new Buffer(7 + length);
+        buffer.writeUInt8(36, 0); // $
+        buffer.writeUInt8(77, 1); // M
+        if (this._type === TcpProtocol.type.REQUEST) {
+            buffer.writeUInt8(60, 2); // <
+        } else {
+            buffer.writeUInt8(62, 2); // >
+        }
+        buffer.writeUInt8(length, 3);
+        buffer.writeUInt8(id, 4);
+        buffer.writeUInt8(code, 5);
+
+        crc = 0x00 ^ id ^ code ^ length;
+        for (i = 0; i < length; i = i + 1) {
+            crc ^= data.readUInt8(i);
+            buffer.writeUInt8(data.readUInt8(i), i + 6);
+        }
+        buffer.writeUInt8(crc, buffer.length - 1);
+
+        return buffer;
+    };
+
+    /**
+     *
+     * @param {Buffer} data
+     * @returns {{valid: boolean, error: string, id: int, code: int, length: int, data: Buffer}}
      */
     TcpProtocol.prototype.unserialize = function (data) {
-        var i, length, id, code, crc, offset, valid, error;
+        var i, length, id, code, crc, offset, valid, error, response;
 
         for (i = 0; i < data.length; i = i + 1) {
             this._data[this._data.length] = data.readUInt8(i);
@@ -45,14 +85,17 @@ MultiWiiSerialProtocol = (function () {
             } else if (this._data[offset + 1] !== 77) {
                 offset = offset + 2;
                 error = 'No beginning "M" char';
-            } else if (this._data[offset + 2] !== 62) {
+            } else if (this._data[offset + 2] !== 62 && this._type === TcpProtocol.type.REQUEST) {
                 offset = offset + 3;
                 error = 'No beginning ">" char';
+            } else if (this._data[offset + 2] !== 60 && this._type === TcpProtocol.type.RESPONSE) {
+                offset = offset + 3;
+                error = 'No beginning "<" char';
             } else if (this._data[offset + 3] <= this._data.length - 6 - offset) {
-                length = this._data[offset + 3];
                 id = this._data[offset + 4];
                 code = this._data[offset + 5];
-                crc = 0x00 ^ length ^ code;
+                length = this._data[offset + 3];
+                crc = 0x00 ^ id ^ code ^ length;
 
                 for (i = 0; i < length; i = i + 1) {
                     crc ^= this._data[offset + 6 + i];
@@ -79,145 +122,162 @@ MultiWiiSerialProtocol = (function () {
 
         this._data = this._data.slice(offset);
 
-        if (valid) {
-            return {
-                valid : true,
-                length: length,
-                id    : id,
-                code  : code,
-                data  : data
-            };
-        }
-
-        return {
-            valid: false,
-            error: error
+        response = {
+            valid: valid
         };
-    };
-
-    /**
-     *
-     * @param {int}         id     - package identifier
-     * @param {int}         code   - command code
-     * @param {Buffer|null} [data] - payload
-     * @returns {Buffer}
-     */
-    TcpProtocol.prototype.serialize = function (id, code, data) {
-        var i, length, crc, buffer;
-
-        length = data === undefined || data === null ? 0 : data.length;
-
-        buffer = new Buffer(7 + length);
-        buffer.write('$M<');
-        buffer.writeUInt8(length, 3);
-        buffer.writeUInt8(id, 4);
-        buffer.writeUInt8(code, 5);
-
-        crc = 0x00 ^ length ^ code;
-        for (i = 0; i < length; i = i + 1) {
-            crc ^= data.readUInt8(i);
-            buffer.writeUInt8(data.readUInt8(i), i + 6);
+        if (valid) {
+            response.id = id;
+            response.code = code;
+            response.length = length;
+            response.data = data;
+        } else {
+            response.error = error;
         }
-        buffer.writeUInt8(crc, buffer.length - 1);
 
-        return buffer;
+        return response;
     };
-
 
     /**
      *
      * @param {Socket} socket
      * @constructor
      */
-    function PackageManager(socket) {
-        var self, data;
+    function TcpPackageManager(socket) {
+        var self;
 
         self = this;
-        data = [];
+        self._lastId = 0;
+        self._packages = {};
+        self._socket = socket;
+        self._tcpProtocol = new TcpProtocol(TcpProtocol.type.REQUEST);
 
-        this._lastId = 0;
-        this._tcpProtocol = new TcpProtocol();
-        this._socket = socket;
-        this._queue = {};
-
-        this._socket.on('data', function (data) {
+        self._socket.on('data', function (data) {
             var result;
 
             result = self._tcpProtocol.unserialize(data);
 
+            console.log(result);
             if (result.valid) {
-                clearTimeout(self._queue[result.id].timeout);
-                self._queue[result.id].callback(null, result.data);
-                delete self._queue[result.id];
+                clearTimeout(self._packages[result.id].timeout);
+                self._packages[result.id].callback(null, result.data);
+                delete self._packages[result.id];
             }
         });
     }
 
-    PackageManager.prototype.getNextId = function () {
-        var i = this._lastId;
+    /**
+     * Get next package identifier
+     *
+     * @returns {number}
+     */
+    TcpPackageManager.prototype.getNextPackageId = function () {
+        var i;
 
+        i = this._lastId;
         do {
-            if (i === 255) {
-                i = 0;
-            } else {
-                i++;
-            }
-            if (!this._queue.hasOwnProperty(i)) {
+            i = i === 255 ? 0 : i + 1;
+            if (!this._packages.hasOwnProperty(i)) {
                 this.lastId = i;
                 break;
             }
-        } while (i !== this._lastId);
+        } while (i !== this.lastId);
 
-        return this.lastId;
+        return this._lastId;
     };
 
     /**
+     * Send package via socket
      *
-     * Register package in processing queue
-     *
-     * @param {int} code         - code NO
-     * @param {Buffer|null} data - data buffer or null if no data
-     * @param callback           - callback function for response
-     * @param {int} [wait=5000]  - timeout for response
+     * @param {int} code
+     * @param {Buffer} data
+     * @param onDataCallback
+     * @param callback
+     * @returns {*}
      */
-    PackageManager.prototype.send = function (code, data, callback, wait) {
-        var id = this.getNextId();
-        this._queue[id] = {
-            callback: callback,
+    TcpPackageManager.prototype.send = function (code, data, onDataCallback, callback) {
+        var id, future;
+
+        id = this.getNextPackageId();
+        future = new Future();
+        this._packages[id] = {
+            callback: function (error, data) {
+                data = onDataCallback ? onDataCallback(data) : null;
+                if (callback) {
+                    callback(null, data);
+                } else {
+                    future.return(data);
+                }
+            },
             timeout : setTimeout(function () {
-                callback('Timeout reach');
-            }, wait === undefined ? 5000 : wait)
+                if (callback) {
+                    callback('Timeout reach');
+                } else {
+                    future.throw('Timeout reach');
+                }
+            }, 5000)
         };
         this._socket.write(this._tcpProtocol.serialize(id, code, data));
+
+        if (!callback) {
+            return future.wait();
+        }
     };
 
-    function Protocol(packageManager) {
-        this._packageManager = packageManager;
+    function Protocol() {
+        this._packageManager = null;
+        this._staticData = {};
+        this._log = [];
 
-        this.send = function (code, data, dataCallback, callback) {
-            if (callback === undefined || callback === null) {
-                var future = new Future();
-
-                this._packageManager.send(code, data, function (error, data) {
-                    if (error) {
-                        //console.log('PM: Error');
-                        future.throw(error);
-                    } else {
-                        //console.log('PM: Return');
-                        future.return(!dataCallback ? null : dataCallback(data));
-                    }
-                });
-
-                return future.wait();
-            }
-            this._packageManager.send(code, data, function (error, data) {
-                callback(error, error || !dataCallback ? null : dataCallback(data));
-            });
-        };
     }
 
+    util.inherits(Protocol, EventEmitter);
+
+    Protocol.prototype.isConnected = function () {
+        return this._packageManager !== null;
+    };
+
+    Protocol.prototype.connect = function (packageManager) {
+        var self, logger;
+
+        self = this;
+        self._packageManager = packageManager;
+        self._staticData = {};
+
+        self.boxNames();
+
+        logger = function () {
+            var startTime, data;
+
+            startTime = new Date().getTime();
+
+            data = {
+                time    : new Date().getTime(),
+                status  : self.status(),
+                rawImu  : self.rawImu(),
+                rc      : self.rc(),
+                rawGPS  : self.rawGPS(),
+                compGPS : self.compGPS(),
+                attitude: self.attitude(),
+                altitude: self.altitude(),
+                analog  : self.analog()
+            };
+            data.cycleTime = new Date().getTime() - start;
+
+            self._log.push(data);
+            self.emit('update', data);
+
+            if (self._packageManager !== null) {
+                logger();
+            }
+        };
+    };
+
+    Protocol.prototype.disconnect = function () {
+        this._packageManager = null;
+    };
+
     Protocol.prototype.ident = function (callback) {
-        return this.send(100, null, function (data) {
+        return this._packageManager.send(100, null, function (data) {
             return {
                 version   : data.readUInt8(0),
                 multiType : data.readUInt8(1),
@@ -228,19 +288,27 @@ MultiWiiSerialProtocol = (function () {
     };
 
     Protocol.prototype.status = function (callback) {
-        return this.send(101, null, function (data) {
+        return this._packageManager.send(101, null, function (data) {
+            var sensorPresent;
+
+            sensorPresent = data.readUInt16LE(4);
             return {
                 cycleTime           : data.readUInt16LE(0),
                 i2cErrorCount       : data.readUInt16LE(2),
-                sensorPresent       : data.readUInt16LE(4),
-                boxActivation       : data.readUInt32LE(6),
+                sensorPresent       : {
+                    acc  : (sensorPresent & 1) !== 0,
+                    baro : (sensorPresent & 2) !== 0,
+                    mag  : (sensorPresent & 4) !== 0,
+                    gps  : (sensorPresent & 8) !== 0,
+                    sonar: (sensorPresent & 16) !== 0
+                },
+                boxActivation       : data.readUInt32LE(6), // flag
                 currentSettingNumber: data.readUInt8(10)
             };
         }, callback);
     };
-
     Protocol.prototype.rawImu = function (callback) {
-        return this.send(102, null, function (data) {
+        return this._packageManager.send(102, null, function (data) {
             return {
                 gyro: {
                     x: data.readInt16LE(0),
@@ -262,7 +330,7 @@ MultiWiiSerialProtocol = (function () {
     };
 
     Protocol.prototype.servo = function (callback) {
-        return this.send(103, null, function (data) {
+        return this._packageManager.send(103, null, function (data) {
             return [
                 data.readUInt16LE(0),
                 data.readUInt16LE(2),
@@ -277,7 +345,7 @@ MultiWiiSerialProtocol = (function () {
     };
 
     Protocol.prototype.motor = function (callback) {
-        return this.send(104, null, function (data) {
+        return this._packageManager.send(104, null, function (data) {
             return [
                 data.readUInt16LE(0),
                 data.readUInt16LE(2),
@@ -292,7 +360,7 @@ MultiWiiSerialProtocol = (function () {
     };
 
     Protocol.prototype.rc = function (callback) {
-        return this.send(105, null, function (data) {
+        return this._packageManager.send(105, null, function (data) {
             return {
                 roll    : data.readUInt16LE(0),
                 pitch   : data.readUInt16LE(2),
@@ -307,7 +375,7 @@ MultiWiiSerialProtocol = (function () {
     };
 
     Protocol.prototype.rawGPS = function (callback) {
-        return this.send(106, null, function (data) {
+        return this._packageManager.send(106, null, function (data) {
             return {
                 fix         : data.readUInt8(0),
                 numSat      : data.readUInt8(1),
@@ -323,7 +391,7 @@ MultiWiiSerialProtocol = (function () {
     };
 
     Protocol.prototype.compGPS = function (callback) {
-        return this.send(107, null, function (data) {
+        return this._packageManager.send(107, null, function (data) {
             return {
                 distanceToHome : data.readUInt16LE(0),
                 directionToHome: data.readUInt16LE(2),
@@ -333,7 +401,7 @@ MultiWiiSerialProtocol = (function () {
     };
 
     Protocol.prototype.attitude = function (callback) {
-        return this.send(108, null, function (data) {
+        return this._packageManager.send(108, null, function (data) {
             return {
                 x      : data.readInt16LE(0),
                 y      : data.readInt16LE(2),
@@ -343,7 +411,7 @@ MultiWiiSerialProtocol = (function () {
     };
 
     Protocol.prototype.altitude = function (callback) {
-        return this.send(109, null, function (data) {
+        return this._packageManager.send(109, null, function (data) {
             return {
                 estimated: data.readInt32LE(0),
                 vario    : data.readInt16LE(4)
@@ -352,7 +420,7 @@ MultiWiiSerialProtocol = (function () {
     };
 
     Protocol.prototype.analog = function (callback) {
-        return this.send(110, null, function (data) {
+        return this._packageManager.send(110, null, function (data) {
             return {
                 vbat            : data.readUInt8(0),
                 intPowerMeterSum: data.readUInt16LE(1),
@@ -362,7 +430,7 @@ MultiWiiSerialProtocol = (function () {
         }, callback);
     };
     Protocol.prototype.rcTuning = function (callback) {
-        return this.send(111, null, function (data) {
+        return this._packageManager.send(111, null, function (data) {
             return {
                 rcRate        : data.readUInt8(0),
                 rcExpo        : data.readUInt8(1),
@@ -376,7 +444,7 @@ MultiWiiSerialProtocol = (function () {
     };
 
     Protocol.prototype.pid = function (callback) {
-        return this.send(112, null, function (data) {
+        return this._packageManager.send(112, null, function (data) {
             return {
                 roll    : {
                     p: data.readUInt8(0),
@@ -433,7 +501,7 @@ MultiWiiSerialProtocol = (function () {
     };
 
     Protocol.prototype.box = function (callback) {
-        return this.send(113, null, function (data) {
+        return this._packageManager.send(113, null, function (data) {
             var i, box;
 
             box = [];
@@ -445,7 +513,7 @@ MultiWiiSerialProtocol = (function () {
     };
 
     Protocol.prototype.misc = function (callback) {
-        return this.send(114, null, function (data) {
+        return this._packageManager.send(114, null, function (data) {
             return {
                 intPowerTrigger: data.readUInt16LE(0),
                 conf           : {
@@ -472,7 +540,7 @@ MultiWiiSerialProtocol = (function () {
     };
 
     Protocol.prototype.motorPins = function (callback) {
-        return this.send(115, null, function (data) {
+        return this._packageManager.send(115, null, function (data) {
             return [
                 data.readUInt8(0),
                 data.readUInt8(1),
@@ -487,15 +555,19 @@ MultiWiiSerialProtocol = (function () {
     };
 
     Protocol.prototype.boxNames = function (callback) {
-        return this.send(116, null, function (data) {
-            return data.toString().split(';').filter(function (value) {
-                return value !== '';
+        if (!this._staticData.hasOwnProperty('boxNames')) {
+            this._staticData.boxNames = this._packageManager.send(116, null, function (data) {
+                return data.toString().split(';').filter(function (value) {
+                    return value !== '';
+                });
             });
-        }, callback);
+        }
+
+        return callback ? callback(null, this._staticData.boxNames) : this._staticData.boxNames;
     };
 
     Protocol.prototype.pidNames = function (callback) {
-        return this.send(117, null, function (error, data) {
+        return this._packageManager.send(117, null, function (error, data) {
             return data.toString().split(';').filter(function (value) {
                 return value !== '';
             });
@@ -503,7 +575,7 @@ MultiWiiSerialProtocol = (function () {
     };
 
     Protocol.prototype.wp = function (callback) {
-        return this.send(118, null, function (data) {
+        return this._packageManager.send(118, null, function (data) {
             return {
                 wpNo      : data.readUInt8(0),
                 latitude  : data.readUInt32LE(1),
@@ -517,7 +589,7 @@ MultiWiiSerialProtocol = (function () {
     };
 
     Protocol.prototype.boxIDs = function (callback) {
-        return this.send(119, null, function (data) {
+        return this._packageManager.send(119, null, function (data) {
             var i, boxIDs;
 
             boxIDs = [];
@@ -530,7 +602,7 @@ MultiWiiSerialProtocol = (function () {
     };
 
     Protocol.prototype.servoConf = function (callback) {
-        return this.send(120, null, function (data) {
+        return this._packageManager.send(120, null, function (data) {
             var i, servoConf;
 
             servoConf = [];
@@ -559,7 +631,7 @@ MultiWiiSerialProtocol = (function () {
         data.writeUInt16LE(options.aux3, 12);
         data.writeUInt16LE(options.aux4, 14);
 
-        this.send(200, data, null, callback);
+        this._packageManager.send(200, data, null, callback);
     };
 
     Protocol.prototype.setRawGPS = function (options, callback) {
@@ -572,7 +644,7 @@ MultiWiiSerialProtocol = (function () {
         data.writeUInt16LE(options.altitude, 10);
         data.writeUInt16LE(options.speed, 12);
 
-        this.send(201, data, null, callback);
+        this._packageManager.send(201, data, null, callback);
     };
 
     Protocol.prototype.setPID = function (options, callback) {
@@ -618,7 +690,7 @@ MultiWiiSerialProtocol = (function () {
         data.writeUInt8(options.vel.i, 28);
         data.writeUInt8(options.vel.d, 29);
 
-        this.send(202, data, null, callback);
+        this._packageManager.send(202, data, null, callback);
     };
 
     Protocol.prototype.setBox = function (box, callback) {
@@ -630,7 +702,7 @@ MultiWiiSerialProtocol = (function () {
             data.writeUInt16LE(box[i]);
         }
 
-        this.send(203, data, null, callback);
+        this._packageManager.send(203, data, null, callback);
     };
 
     Protocol.prototype.setRCTuning = function (options, callback) {
@@ -644,15 +716,15 @@ MultiWiiSerialProtocol = (function () {
         data.writeUInt8(options.throttleMID, 5);
         data.writeUInt8(options.throttleExpo, 6);
 
-        this.send(204, data, null, callback);
+        this._packageManager.send(204, data, null, callback);
     };
 
     Protocol.prototype.accCalibration = function (callback) {
-        this.send(205, null, null, callback);
+        this._packageManager.send(205, null, null, callback);
     };
 
     Protocol.prototype.magCalibration = function (callback) {
-        this.send(206, null, null, callback);
+        this._packageManager.send(206, null, null, callback);
     };
 
     Protocol.prototype.setMisc = function (options, callback) {
@@ -671,11 +743,11 @@ MultiWiiSerialProtocol = (function () {
         data.writeUInt8(options.vbat.level.warn2, 20);
         data.writeUInt8(options.vbat.level.crit, 21);
 
-        this.send(207, data, null, callback);
+        this._packageManager.send(207, data, null, callback);
     };
 
     Protocol.prototype.resetConf = function (callback) {
-        this.send(208, null, null, callback);
+        this._packageManager.send(208, null, null, callback);
     };
 
     Protocol.prototype.setWp = function (options, callback) {
@@ -689,7 +761,7 @@ MultiWiiSerialProtocol = (function () {
         data.writeUInt16LE(options.timeToStay, 15);
         data.writeUInt8(options.navFlag, 17);
 
-        this.send(209, data, null, callback);
+        this._packageManager.send(209, data, null, callback);
     };
 
     Protocol.prototype.selectSetting = function (currentSet, callback) {
@@ -697,7 +769,7 @@ MultiWiiSerialProtocol = (function () {
 
         data.writeUInt8(currentSet, 0);
 
-        this.send(210, data, null, callback);
+        this._packageManager.send(210, data, null, callback);
     };
 
     Protocol.prototype.setHead = function (head, callback) {
@@ -705,7 +777,7 @@ MultiWiiSerialProtocol = (function () {
 
         data.writeInt16LE(head, 0);
 
-        this.send(211, data, null, callback);
+        this._packageManager.send(211, data, null, callback);
     };
 
     Protocol.prototype.setServoConf = function (servo, callback) {
@@ -720,186 +792,12 @@ MultiWiiSerialProtocol = (function () {
             data.writeUInt8(servo[i].rate, i * 7 + 6);
         }
 
-        this.send(212, data, null, callback);
-    };
-
-    function OpenedProtocol() {
-        var self = this;
-
-        this._updating = false;
-        this._log = [];
-        this._cycleFunction = function () {
-            Fiber(function () {
-                var start;
-
-                start = new Date().getTime();
-
-                self._lastData = {
-                    time    : new Date().getTime(),
-                    status  : self._protocol.status(),
-                    rawImu  : self._protocol.rawImu(),
-                    rc      : self._protocol.rc(),
-                    rawGPS  : self._protocol.rawGPS(),
-                    compGPS : self._protocol.compGPS(),
-                    attitude: self._protocol.attitude(),
-                    altitude: self._protocol.altitude(),
-                    analog  : self._protocol.analog()
-                };
-                self._lastData.cycleTime = new Date().getTime() - start;
-                self._log.push(self._lastData);
-
-                self.emit('update', self._lastData);
-
-                if (self._updating) {
-                    self._cycleFunction();
-                } else {
-                    self._timeout = null;
-                }
-            }).run();
-        };
-
-        this._protocol = null;
-        this._lastData = null;
-        this._ident = null;
-    }
-
-    util.inherits(OpenedProtocol, EventEmitter);
-
-    OpenedProtocol.prototype.protocol = function () {
-        return this._protocol;
-    };
-
-    OpenedProtocol.prototype.log = function () {
-        return this._log;
-    };
-
-    OpenedProtocol.prototype.isConnected = function () {
-        return this._protocol !== null;
-    };
-
-    OpenedProtocol.prototype.connect = function (protocol) {
-        //console.log('Connect');
-        this._protocol = protocol;
-        this._ident = this._protocol.ident();
-        this._updating = true;
-        this._cycleFunction();
-    };
-
-    OpenedProtocol.prototype.disconnect = function () {
-        this._protocol = null;
-        this._updating = false;
-        if (this._cycleFunction !== null) {
-            clearTimeout(this._cycleFunction);
-        }
-    };
-
-    OpenedProtocol.prototype.ident = function () {
-        return this._ident;
-    };
-    OpenedProtocol.prototype.status = function () {
-        return this._lastData.status;
-    };
-    OpenedProtocol.prototype.rawImu = function () {
-        return this._lastData.rawImu;
-    };
-    OpenedProtocol.prototype.servo = function () {
-        return this._lastData.servo;
-    };
-    OpenedProtocol.prototype.motor = function () {
-        return this._lastData.motor;
-    };
-    OpenedProtocol.prototype.rc = function () {
-        return this._lastData.rc;
-    };
-    OpenedProtocol.prototype.rawGPS = function () {
-        return this._lastData.rawGPS;
-    };
-    OpenedProtocol.prototype.compGPS = function () {
-        return this._lastData.compGPS;
-    };
-    OpenedProtocol.prototype.attitude = function () {
-        return this._lastData.attitude;
-    };
-    OpenedProtocol.prototype.altitude = function () {
-        return this._lastData.altitude;
-    };
-    OpenedProtocol.prototype.analog = function () {
-        return this._lastData.analog;
-    };
-
-    OpenedProtocol.prototype.rcTuning = function () {
-        return this._protocol.rcTuning();
-    };
-    OpenedProtocol.prototype.pid = function () {
-        return this._protocol.pid();
-    };
-    OpenedProtocol.prototype.box = function () {
-        return this._protocol.box();
-    };
-    OpenedProtocol.prototype.misc = function () {
-        return this._protocol.misc();
-    };
-    OpenedProtocol.prototype.motorPins = function () {
-        return this._protocol.motorPins();
-    };
-    OpenedProtocol.prototype.boxNames = function () {
-        return this._protocol.boxNames();
-    };
-    OpenedProtocol.prototype.pidNames = function () {
-        return this._protocol.pidNames();
-    };
-    OpenedProtocol.prototype.wp = function () {
-        return this._protocol.wp();
-    };
-    OpenedProtocol.prototype.boxIDs = function () {
-        return this._protocol.boxIDs();
-    };
-    OpenedProtocol.prototype.servoConf = function () {
-        return this._protocol.servoConf();
-    };
-    OpenedProtocol.prototype.setRawRC = function (options) {
-        return this._protocol.setRawRC(options);
-    };
-    OpenedProtocol.prototype.setRawGPS = function (options) {
-        return this._protocol.setRawGPS(options);
-    };
-    OpenedProtocol.prototype.setPID = function (options) {
-        return this._protocol.setPID(options);
-    };
-    OpenedProtocol.prototype.setBox = function (box) {
-        return this._protocol.setBox(box);
-    };
-    OpenedProtocol.prototype.setRCTuning = function (options) {
-        return this._protocol.setRCTuning(options);
-    };
-    OpenedProtocol.prototype.accCalibration = function () {
-        return this._protocol.accCalibration();
-    };
-    OpenedProtocol.prototype.magCalibration = function () {
-        return this._protocol.magCalibration();
-    };
-    OpenedProtocol.prototype.setMisc = function (options) {
-        return this._protocol.setMisc(options);
-    };
-    OpenedProtocol.prototype.resetConf = function (options) {
-        return this._protocol.resetConf(options);
-    };
-    OpenedProtocol.prototype.setWp = function (options) {
-        return this._protocol.setWp(options);
-    };
-    OpenedProtocol.prototype.selectSetting = function (currentSet) {
-        return this._protocol.selectSetting(currentSet);
-    };
-    OpenedProtocol.prototype.setHead = function (head) {
-        return this._protocol.setHead(head);
-    };
-    OpenedProtocol.prototype.setServoConf = function (servo) {
-        return this._protocol.setServoConf(servo);
+        this._packageManager.send(212, data, null, callback);
     };
 
     return {
-        PackageManager: PackageManager,
-        Protocol      : Protocol,
-        OpenedProtocol: OpenedProtocol
+        TcpProtocol      : TcpProtocol,
+        TcpPackageManager: TcpPackageManager,
+        Protocol         : Protocol
     };
-}());
+}();

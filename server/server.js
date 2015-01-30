@@ -15,20 +15,21 @@ mspOpenedProtocols = {};
 
                 console.log('SERV: Client connecting...');
 
-                packageManager = new MultiWiiSerialProtocol.PackageManager(socket);
-                protocol = new MultiWiiSerialProtocol.Protocol(packageManager);
+                packageManager = new MultiWiiSerialProtocol.TcpPackageManager(socket);
+
                 address = socket.address();
                 key = address.address + ':' + address.port;
 
                 if (!mspOpenedProtocols.hasOwnProperty(key)) {
-                    mspOpenedProtocols[key] = new MultiWiiSerialProtocol.OpenedProtocol(protocol);
+                    mspOpenedProtocols[key] = new MultiWiiSerialProtocol.Protocol();
 
                     mspOpenedProtocols[key].on('update', function (lastData) {
                         stream.emit('update' + key, lastData);
                     });
                 }
 
-                mspOpenedProtocols[key].connect(protocol);
+                mspOpenedProtocols[key].connect(packageManager);
+//                stream.emit('close', key);
 
                 socket.on('close', function () {
                     mspOpenedProtocols[key].disconnect();
