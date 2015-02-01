@@ -334,7 +334,7 @@ MultiWiiSerialProtocol = function () {
         self.boxNames();
         self.pidNames();
 
-        logger();
+        Fiber(logger).run();
     };
 
     /**
