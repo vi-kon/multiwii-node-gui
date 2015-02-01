@@ -2,8 +2,48 @@ MultiWiiSerialProtocol = function () {
     "use strict";
 
     var Future = Npm.require('fibers/future');
+    var Fiber = Npm.require('fibers');
     var util = Npm.require('util');
     var EventEmitter = Npm.require('events').EventEmitter;
+
+    function clone(obj) {
+        var copy;
+
+        // Handle the 3 simple types, and null or undefined
+        if (obj === null || "object" !== typeof obj) {
+            return obj;
+        }
+
+
+        // Handle Date
+        if (obj instanceof Date) {
+            copy = new Date();
+            copy.setTime(obj.getTime());
+            return copy;
+        }
+
+        // Handle Array
+        if (obj instanceof Array) {
+            copy = [];
+            for (var i = 0, len = obj.length; i < len; i++) {
+                copy[i] = clone(obj[i]);
+            }
+            return copy;
+        }
+
+        // Handle Object
+        if (obj instanceof Object) {
+            copy = {};
+            for (var attr in obj) {
+                if (obj.hasOwnProperty(attr)) {
+                    copy[attr] = clone(obj[attr]);
+                }
+            }
+            return copy;
+        }
+
+        throw new Error("Unable to copy obj! Its type isn't supported.");
+    }
 
     /**
      *
@@ -156,8 +196,7 @@ MultiWiiSerialProtocol = function () {
 
             result = self._tcpProtocol.unserialize(data);
 
-            console.log(result);
-            if (result.valid) {
+            if (result.valid && self._packages.hasOwnProperty(result.id)) {
                 clearTimeout(self._packages[result.id].timeout);
                 self._packages[result.id].callback(null, result.data);
                 delete self._packages[result.id];
@@ -182,6 +221,8 @@ MultiWiiSerialProtocol = function () {
             }
         } while (i !== this.lastId);
 
+        this._lastId = i;
+
         return this._lastId;
     };
 
@@ -195,11 +236,12 @@ MultiWiiSerialProtocol = function () {
      * @returns {*}
      */
     TcpPackageManager.prototype.send = function (code, data, onDataCallback, callback) {
-        var id, future;
+        var self, id, future;
 
-        id = this.getNextPackageId();
+        self = this;
+        id = self.getNextPackageId();
         future = new Future();
-        this._packages[id] = {
+        self._packages[id] = {
             callback: function (error, data) {
                 data = onDataCallback ? onDataCallback(data) : null;
                 if (callback) {
@@ -209,41 +251,58 @@ MultiWiiSerialProtocol = function () {
                 }
             },
             timeout : setTimeout(function () {
+                var error;
+
+                error = 'Package timeout reach (#' + id + '/' + code + ')';
                 if (callback) {
-                    callback('Timeout reach');
+                    callback(error);
                 } else {
-                    future.throw('Timeout reach');
+                    future.throw(error);
                 }
+                delete self._packages[id];
             }, 5000)
         };
-        this._socket.write(this._tcpProtocol.serialize(id, code, data));
+
+        self._socket.write(this._tcpProtocol.serialize(id, code, data));
 
         if (!callback) {
             return future.wait();
         }
     };
 
+    /**
+     *
+     * @constructor
+     */
     function Protocol() {
         this._packageManager = null;
-        this._staticData = {};
         this._log = [];
+
 
     }
 
     util.inherits(Protocol, EventEmitter);
 
+    /**
+     * Check if protocol is connected to device
+     *
+     * @returns {boolean}
+     */
     Protocol.prototype.isConnected = function () {
         return this._packageManager !== null;
     };
 
+    /**
+     * Connect to device
+     *
+     * @param {TcpPackageManager} packageManager
+     */
     Protocol.prototype.connect = function (packageManager) {
         var self, logger;
 
         self = this;
         self._packageManager = packageManager;
-        self._staticData = {};
-
-        self.boxNames();
+        self._cache = {};
 
         logger = function () {
             var startTime, data;
@@ -261,7 +320,7 @@ MultiWiiSerialProtocol = function () {
                 altitude: self.altitude(),
                 analog  : self.analog()
             };
-            data.cycleTime = new Date().getTime() - start;
+            data.cycleTime = new Date().getTime() - startTime;
 
             self._log.push(data);
             self.emit('update', data);
@@ -270,43 +329,138 @@ MultiWiiSerialProtocol = function () {
                 logger();
             }
         };
+
+        Fiber(function () {
+            self.ident();
+            self.boxNames();
+            self.pidNames();
+
+            logger();
+        }).run();
     };
 
+    /**
+     * Disconnect from device
+     */
     Protocol.prototype.disconnect = function () {
         this._packageManager = null;
     };
 
-    Protocol.prototype.ident = function (callback) {
-        return this._packageManager.send(100, null, function (data) {
-            return {
-                version   : data.readUInt8(0),
-                multiType : data.readUInt8(1),
-                mspVersion: data.readUInt8(2),
-                capability: data.readUInt32LE(3)
-            };
-        }, callback);
+    /**
+     *
+     * Get ident
+     *
+     * Data format:
+     * {
+     *   version:    {int}, version of MultiWii
+     *   multiType:  {int}, type of multicopter (multitype)
+     *   mspVersion: {int}, MultiWii Serial Protocol version (not used)
+     *   capability: {int}  indicate capability of FC board
+     * }
+     *
+     * @param [callback=null] callback
+     * @param {boolean} [cache=true] force load ident from multicpter protocol, not from cache
+     * @returns {*}
+     */
+    Protocol.prototype.ident = function (callback, cache) {
+        if (!this._cache.hasOwnProperty('ident') || cache === false) {
+            this._cache.ident = this._packageManager.send(100, null, function (data) {
+                return {
+                    version   : data.readUInt8(0),
+                    multiType : data.readUInt8(1),
+                    mspVersion: data.readUInt8(2),
+                    capability: data.readUInt32LE(3)
+                };
+            });
+        }
+
+        if (callback) {
+            return callback(null, clone(this._cache.ident));
+        }
+
+        return clone(this._cache.ident);
     };
 
+    /**
+     *
+     * Get status
+     *
+     * Data format
+     * {
+     *   cycleTime:            {int}, unit: microseconds
+     *   12cErrorCount:        {int},
+     *   sensorPresent:        {      sensor present
+     *     acc:   {boolean},
+     *     baro:  {boolean},
+     *     mag:   {boolean},
+     *     gps:   {boolean},
+     *     sonar: {boolean}
+     *   },
+     *   boxActivation:        [],   indicates which BOX are activates (index order is depend on boxNames)
+     *   currentSettingNumber: {}    to indicate the current configuration settings
+     * }
+     *
+     * @param [callback=null]
+     * @returns {*}
+     */
     Protocol.prototype.status = function (callback) {
-        return this._packageManager.send(101, null, function (data) {
-            var sensorPresent;
+        var self;
 
-            sensorPresent = data.readUInt16LE(4);
+        self = this;
+
+        return this._packageManager.send(101, null, function (data) {
+            var i, sensorPresentSum, boxActivationSum, boxActivation, boxNames;
+
+            sensorPresentSum = data.readUInt16LE(4);
+            boxActivationSum = data.readUInt32LE(6); // flag
+            boxActivation = [];
+            boxNames = self.boxNames();
+
+            for (i = 0; i < boxNames.length; i++) {
+                boxActivation[i] = (boxActivationSum & (1 << i)) > 0;
+            }
+
             return {
                 cycleTime           : data.readUInt16LE(0),
                 i2cErrorCount       : data.readUInt16LE(2),
                 sensorPresent       : {
-                    acc  : (sensorPresent & 1) !== 0,
-                    baro : (sensorPresent & 2) !== 0,
-                    mag  : (sensorPresent & 4) !== 0,
-                    gps  : (sensorPresent & 8) !== 0,
-                    sonar: (sensorPresent & 16) !== 0
+                    acc  : (sensorPresentSum & 1) !== 0,
+                    baro : (sensorPresentSum & 2) !== 0,
+                    mag  : (sensorPresentSum & 4) !== 0,
+                    gps  : (sensorPresentSum & 8) !== 0,
+                    sonar: (sensorPresentSum & 16) !== 0
                 },
-                boxActivation       : data.readUInt32LE(6), // flag
+                boxActivation       : boxActivation,
                 currentSettingNumber: data.readUInt8(10)
             };
         }, callback);
     };
+
+    /**
+     * Get raw imu
+     *
+     * Data format
+     * {
+     *   gyro: {
+     *     x: {int},
+     *     y: {int},
+     *     z: {int}
+     *   },
+     *   acc:  {
+     *     x: {int},
+     *     y: {int},
+     *     z: {int}
+     *   },
+     *   mag:  {
+     *     x: {int},
+     *     y: {int},
+     *     z: {int}
+     *   }
+     * }
+     *
+     * @param [callback=null]
+     * @returns {*}
+     */
     Protocol.prototype.rawImu = function (callback) {
         return this._packageManager.send(102, null, function (data) {
             return {
@@ -329,6 +483,16 @@ MultiWiiSerialProtocol = function () {
         }, callback);
     };
 
+    /**
+     *
+     * Get individual servo state
+     *
+     * Data format
+     * [int,int,int,int,int,int,int,int] range: [1000,2000] - order depends on multitype
+     *
+     * @param [callback=null]
+     * @returns {*}
+     */
     Protocol.prototype.servo = function (callback) {
         return this._packageManager.send(103, null, function (data) {
             return [
@@ -344,6 +508,16 @@ MultiWiiSerialProtocol = function () {
         }, callback);
     };
 
+    /**
+     *
+     * Get individual motor throttle
+     *
+     * Data format
+     * [int,int,int,int,int,int,int,int] range: [1000,2000] - order depends on multitype
+     *
+     * @param [callback=null]
+     * @returns {*}
+     */
     Protocol.prototype.motor = function (callback) {
         return this._packageManager.send(104, null, function (data) {
             return [
@@ -359,6 +533,25 @@ MultiWiiSerialProtocol = function () {
         }, callback);
     };
 
+    /**
+     *
+     * Get live RC data
+     *
+     * Data format
+     * {
+     *   roll:     {int}, range: [1000,2000]
+     *   pitch:    {int}, range: [1000,2000]
+     *   yaw:      {int}, range: [1000,2000]
+     *   throttle: {int}, range: [1000,2000]
+     *   aux1:     {int}, range: [1000,2000]
+     *   aux2:     {int}, range: [1000,2000]
+     *   aux3:     {int}, range: [1000,2000]
+     *   aux4:     {int}  range: [1000,2000]
+     * }
+     *
+     * @param [callback=null]
+     * @returns {*}
+     */
     Protocol.prototype.rc = function (callback) {
         return this._packageManager.send(105, null, function (data) {
             return {
@@ -374,22 +567,56 @@ MultiWiiSerialProtocol = function () {
         }, callback);
     };
 
+    /**
+     *
+     * Get raw GPS data
+     *
+     * Data format
+     * {
+     *   fix:          {boolean},
+     *   numSat:       {int},
+     *   coord:        {
+     *     latitude:  {int},      unit: deg
+     *     longitude: {int},      unit: deg
+     *     altitude:  {int}       unit: m
+     *   },
+     *   speed:        {int},     unit: cm/s
+     *   groundCourse: {int}      unit: deg
+     * }
+     *
+     * @param [callback=null]
+     * @returns {*}
+     */
     Protocol.prototype.rawGPS = function (callback) {
         return this._packageManager.send(106, null, function (data) {
             return {
-                fix         : data.readUInt8(0),
+                fix         : data.readUInt8(0) === 1,
                 numSat      : data.readUInt8(1),
                 coord       : {
-                    latitude : data.readUInt32LE(2),
-                    longitude: data.readUInt32LE(6),
+                    latitude : data.readUInt32LE(2) / 10000000,
+                    longitude: data.readUInt32LE(6) / 10000000,
                     altitude : data.readUInt16LE(10)
                 },
                 speed       : data.readUInt16LE(12),
-                groundCourse: data.readUInt16LE(14)
+                groundCourse: data.readUInt16LE(14) / 10
             };
         }, callback);
     };
 
+    /**
+     *
+     * Get computed GPS data
+     *
+     * Data format
+     * {
+     *   distanceToHome:  {int}, unit: m
+     *   directionToHome: {int}, unit: deg - range: [-180,180]
+     *   update:          {int}  flag to indicate when a new GPS frame received
+     * }
+     *
+     * @param [callback=null]
+     * @returns {*}
+     */
     Protocol.prototype.compGPS = function (callback) {
         return this._packageManager.send(107, null, function (data) {
             return {
@@ -400,16 +627,43 @@ MultiWiiSerialProtocol = function () {
         }, callback);
     };
 
+    /**
+     *
+     * Get attitude
+     *
+     * Data format
+     * {
+     *   x:       {int}, unit: deg - range: [-1800-1800]
+     *   y:       {int}, unit: deg - range: [-900-900]
+     *   heading: {int}  range: [-180,180]
+     * }
+     *
+     * @param [callback=null]
+     * @returns {*}
+     */
     Protocol.prototype.attitude = function (callback) {
         return this._packageManager.send(108, null, function (data) {
             return {
-                x      : data.readInt16LE(0),
-                y      : data.readInt16LE(2),
+                x      : data.readInt16LE(0) / 10,
+                y      : data.readInt16LE(2) / 10,
                 heading: data.readInt16LE(4)
             };
         }, callback);
     };
 
+    /**
+     *
+     * Get altitude
+     *
+     * Data format
+     * {
+     *   estimated: {int} unit: cm
+     *   vario:     {int} unit: cm/s
+     * }
+     *
+     * @param [callback=null]
+     * @returns {*}
+     */
     Protocol.prototype.altitude = function (callback) {
         return this._packageManager.send(109, null, function (data) {
             return {
@@ -419,16 +673,49 @@ MultiWiiSerialProtocol = function () {
         }, callback);
     };
 
+    /**
+     * Get analog
+     *
+     * Data format
+     * {
+     *   vbat:             {int}, unit: volt
+     *   intPowerMeterSum: {int},
+     *   rssi:             {int}, range: [0,1023]
+     *   amperage:         {int}
+     * }
+     *
+     * @param [callback=null]
+     * @returns {*}
+     */
     Protocol.prototype.analog = function (callback) {
         return this._packageManager.send(110, null, function (data) {
             return {
-                vbat            : data.readUInt8(0),
+                vbat            : data.readUInt8(0) / 10,
                 intPowerMeterSum: data.readUInt16LE(1),
                 rssi            : data.readUInt16LE(3),
                 amperage        : data.readUInt16LE(5)
             };
         }, callback);
     };
+
+    /**
+     *
+     * Get RC tuning
+     *
+     * Data format
+     * {
+     *   rcRate:         {int}, range: [0,100]
+     *   rcExpo:         {int}, range: [0,100]
+     *   rollPitchRate:  {int}, range: [0,100]
+     *   yawRate:        {int}, range: [0,100]
+     *   dynThrottlePID: {int}, range: [0,100]
+     *   throttleMid:    {int}, range: [0,100]
+     *   throttleExpo:   {int}  range: [0,100]
+     * }
+     *
+     * @param [callback=null]
+     * @returns {*}
+     */
     Protocol.prototype.rcTuning = function (callback) {
         return this._packageManager.send(111, null, function (data) {
             return {
@@ -437,12 +724,73 @@ MultiWiiSerialProtocol = function () {
                 rollPitchRate : data.readUInt8(2),
                 yawRate       : data.readUInt8(3),
                 dynThrottlePID: data.readUInt8(4),
-                throttleMID   : data.readUInt8(5),
+                throttleMid   : data.readUInt8(5),
                 throttleExpo  : data.readUInt8(6)
             };
         }, callback);
     };
 
+    /**
+     *
+     * Get PID settings
+     *
+     * Data format
+     * {
+     *   roll:     {
+     *     p: {int},
+     *     i: {int},
+     *     d: {int}
+     *   },
+     *   pitch:    {
+     *     p: {int},
+     *     i: {int},
+     *     d: {int}
+     *   },
+     *   yaw:      {
+     *     p: {int},
+     *     i: {int},
+     *     d: {int}
+     *   },
+     *   altitude: {
+     *     p: {int},
+     *     i: {int},
+     *     d: {int}
+     *   },
+     *   pos:      {
+     *     p: {int},
+     *     i: {int},
+     *     d: {int}
+     *   },
+     *   posr:     {
+     *     p: {int},
+     *     i: {int},
+     *     d: {int}
+     *   },
+     *   navr:     {
+     *     p: {int},
+     *     i: {int},
+     *     d: {int}
+     *   },
+     *   level:    {
+     *     p: {int},
+     *     i: {int},
+     *     d: {int}
+     *   },
+     *   mag:      {
+     *     p: {int},
+     *     i: {int},
+     *     d: {int}
+     *   },
+     *   vel:      {
+     *     p: {int},
+     *     i: {int},
+     *     d: {int}
+     *   }
+     * }
+     *
+     * @param [callback=null]
+     * @returns {*}
+     */
     Protocol.prototype.pid = function (callback) {
         return this._packageManager.send(112, null, function (data) {
             return {
@@ -525,9 +873,9 @@ MultiWiiSerialProtocol = function () {
                     vbat            : {
                         scale: data.readUInt8(18),
                         level: {
-                            warn1: data.readUInt8(19),
-                            warn2: data.readUInt8(20),
-                            crit : data.readUInt8(21)
+                            warn1   : data.readUInt8(19) / 10,
+                            warn2   : data.readUInt8(20) / 10,
+                            critical: data.readUInt8(21) / 10
                         }
                     }
                 },
@@ -554,24 +902,36 @@ MultiWiiSerialProtocol = function () {
         }, callback);
     };
 
-    Protocol.prototype.boxNames = function (callback) {
-        if (!this._staticData.hasOwnProperty('boxNames')) {
-            this._staticData.boxNames = this._packageManager.send(116, null, function (data) {
+    Protocol.prototype.boxNames = function (callback, cache) {
+        if (!this._cache.hasOwnProperty('boxNames') || cache === false) {
+            this._cache.boxNames = this._packageManager.send(116, null, function (data) {
                 return data.toString().split(';').filter(function (value) {
                     return value !== '';
                 });
             });
         }
 
-        return callback ? callback(null, this._staticData.boxNames) : this._staticData.boxNames;
+        if (callback) {
+            return callback(clone(this._cache.boxNames));
+        }
+
+        return clone(null, this._cache.boxNames);
     };
 
-    Protocol.prototype.pidNames = function (callback) {
-        return this._packageManager.send(117, null, function (error, data) {
-            return data.toString().split(';').filter(function (value) {
-                return value !== '';
+    Protocol.prototype.pidNames = function (callback, cache) {
+        if (!this._cache.hasOwnProperty('pidNames') || cache === false) {
+            this._cache.pidNames = this._packageManager.send(117, null, function (data) {
+                return data.toString().split(';').filter(function (value) {
+                    return value !== '';
+                });
             });
-        }, callback);
+        }
+
+        if (callback) {
+            return callback(null, clone(this._cache.pidNames));
+        }
+
+        return clone(this._cache.pidNames);
     };
 
     Protocol.prototype.wp = function (callback) {
@@ -619,7 +979,7 @@ MultiWiiSerialProtocol = function () {
         }, callback);
     };
 
-    Protocol.prototype.setRawRC = function (options, callback) {
+    Protocol.prototype.setRawRc = function (options, callback) {
         var data = new Buffer(16);
 
         data.writeUInt16LE(options.roll, 0);
@@ -637,10 +997,10 @@ MultiWiiSerialProtocol = function () {
     Protocol.prototype.setRawGPS = function (options, callback) {
         var data = new Buffer(14);
 
-        data.writeUInt8(options.fix, 0);
+        data.writeUInt8(options.fix ? 1 : 0, 0);
         data.writeUInt8(options.numSat, 1);
-        data.writeUInt32LE(options.latitude, 2);
-        data.writeUInt32LE(options.longitude, 6);
+        data.writeUInt32LE(options.latitude * 10000000, 2);
+        data.writeUInt32LE(options.longitude * 10000000, 6);
         data.writeUInt16LE(options.altitude, 10);
         data.writeUInt16LE(options.speed, 12);
 
@@ -713,7 +1073,7 @@ MultiWiiSerialProtocol = function () {
         data.writeUInt8(options.rollPitchRate, 2);
         data.writeUInt8(options.yawRate, 3);
         data.writeUInt8(options.dynThrottlePID, 4);
-        data.writeUInt8(options.throttleMID, 5);
+        data.writeUInt8(options.throttleMid, 5);
         data.writeUInt8(options.throttleExpo, 6);
 
         this._packageManager.send(204, data, null, callback);
@@ -739,9 +1099,9 @@ MultiWiiSerialProtocol = function () {
         data.writeUInt32LE(options.lifetime, 12);
         data.writeUInt16LE(options.magDeclination, 16);
         data.writeUInt8(options.vbat.scale, 18);
-        data.writeUInt8(options.vbat.level.warn1, 19);
-        data.writeUInt8(options.vbat.level.warn2, 20);
-        data.writeUInt8(options.vbat.level.crit, 21);
+        data.writeUInt8(options.vbat.level.warn1 * 10, 19);
+        data.writeUInt8(options.vbat.level.warn2 * 10, 20);
+        data.writeUInt8(options.vbat.level.critical * 10, 21);
 
         this._packageManager.send(207, data, null, callback);
     };
