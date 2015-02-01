@@ -330,13 +330,11 @@ MultiWiiSerialProtocol = function () {
             }
         };
 
-        Fiber(function () {
-            self.ident();
-            self.boxNames();
-            self.pidNames();
+        self.ident();
+        self.boxNames();
+        self.pidNames();
 
-            logger();
-        }).run();
+        logger();
     };
 
     /**
@@ -965,7 +963,7 @@ MultiWiiSerialProtocol = function () {
             return callback(clone(this._cache.boxNames));
         }
 
-        return clone(null, this._cache.boxNames);
+        return clone(this._cache.boxNames);
     };
 
     Protocol.prototype.pidNames = function (callback, cache) {
