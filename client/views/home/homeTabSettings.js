@@ -20,8 +20,8 @@
         });
 
     readPid = function (callback) {
-        if (Session.get('mspConnectedDeviceName')) {
-            Meteor.call('mspPid', Session.get('mspConnectedDeviceName'), function (error, response) {
+        if (Session.get('mspActiveDeviceName')) {
+            Meteor.call('mspPid', Session.get('mspActiveDeviceName'), function (error, response) {
                 Session.set('mspPid', response);
                 notify('PID settings read', 'success');
             });

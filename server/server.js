@@ -11,7 +11,7 @@ mspOpenedProtocols = {};
 
         server = Net.createServer(function (socket) {
             Fiber(function () {
-                var packageManager, protocol, address, key;
+                var packageManager, address, key;
 
                 console.log('SERV: Client connecting...');
 
@@ -29,7 +29,7 @@ mspOpenedProtocols = {};
                 }
 
                 mspOpenedProtocols[key].connect(packageManager);
-//                stream.emit('close', key);
+                stream.emit('open', key);
 
                 socket.on('close', function () {
                     mspOpenedProtocols[key].disconnect();
