@@ -359,7 +359,7 @@ MultiWiiSerialProtocol = function () {
      * }
      *
      * @param [callback=null] callback
-     * @param {boolean} [cache=true] force load ident from multicpter protocol, not from cache
+     * @param {boolean} [cache=true] force load ident from multicopter protocol, not from cache
      * @returns {*}
      */
     Protocol.prototype.ident = function (callback, cache) {
@@ -860,6 +860,37 @@ MultiWiiSerialProtocol = function () {
         }, callback);
     };
 
+    /**
+     *
+     * Get misc
+     *
+     * Data format
+     * {
+     *   intPowerTrigger: {int}
+     *   conf:            {
+     *     minThrottle:      {int}, range: [1000,2000] - minimum throttle to run motor in idle state
+     *     maxThrottle:      {int}, range: [1000,2000] - maximum throttle
+     *     minCommand:       {int}, range: [1000,2000] - throttle at lowest position
+     *     failSafeThrottle: {int}, range: [1000,2000] - should be set less than hover state
+     *     magDeclination:   {int}, unit: deg - magnetic declination
+     *     vbat: {
+     *       scale: {int},
+     *       level: {
+     *         warn1:    {int},     unit: volt
+     *         warn2:    {int},     unit: volt
+     *         critical: {int}      unit: volt
+     *       }
+     *     },
+     *     plog: {
+     *       arm:      {int},       counter
+     *       lifetime: {int}
+     *     }
+     *   }
+     * }
+     *
+     * @param [callback=null]
+     * @returns {*}
+     */
     Protocol.prototype.misc = function (callback) {
         return this._packageManager.send(114, null, function (data) {
             return {
@@ -869,7 +900,7 @@ MultiWiiSerialProtocol = function () {
                     maxThrottle     : data.readUInt16LE(4),
                     minCommand      : data.readUInt16LE(6),
                     failSafeThrottle: data.readUInt16LE(8),
-                    magDeclination  : data.readUInt16LE(16),
+                    magDeclination  : data.readUInt16LE(16) / 10,
                     vbat            : {
                         scale: data.readUInt8(18),
                         level: {
@@ -887,6 +918,15 @@ MultiWiiSerialProtocol = function () {
         }, callback);
     };
 
+    /**
+     *
+     * Get motor pin indicator
+     *
+     * [int,int,int,int,int,int,int,int]
+     *
+     * @param [callback=null]
+     * @returns {*}
+     */
     Protocol.prototype.motorPins = function (callback) {
         return this._packageManager.send(115, null, function (data) {
             return [
@@ -902,6 +942,16 @@ MultiWiiSerialProtocol = function () {
         }, callback);
     };
 
+    /**
+     *
+     * Get box names
+     *
+     * [string,string,string,string,string,string,string,string] - box names
+     *
+     * @param [callback=null]
+     * @param [cache=true] force load box names from multicopter protocol, not from cache
+     * @returns {*}
+     */
     Protocol.prototype.boxNames = function (callback, cache) {
         if (!this._cache.hasOwnProperty('boxNames') || cache === false) {
             this._cache.boxNames = this._packageManager.send(116, null, function (data) {
