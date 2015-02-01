@@ -1,4 +1,4 @@
-MultiWiiSerialProtocol = function () {
+MultiWiiSerialProtocol = function (undefined) {
     "use strict";
 
     var Future = Npm.require('fibers/future');

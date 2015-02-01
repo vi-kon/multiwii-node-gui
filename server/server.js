@@ -1,6 +1,6 @@
 mspOpenedProtocols = {};
 
-(function (undefined) {
+(function () {
     var stream = new Meteor.Stream('msp');
 
     var Net = Npm.require('net');

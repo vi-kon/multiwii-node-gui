@@ -1,9 +1,9 @@
-(function (undefined) {
+(function () {
     "use strict";
 
     var isMspOpenedProtocols = function (name) {
         return mspOpenedProtocols.hasOwnProperty(name) && mspOpenedProtocols[name].isConnected();
-    }
+    };
 
     Meteor.methods({
                        mspOpenedProtocolNames: function () {

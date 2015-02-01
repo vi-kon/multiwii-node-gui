@@ -1,6 +1,6 @@
 Chart.defaults.global.responsive = true;
 
-(function ($, undefined) {
+(function ($) {
     "use strict";
 
     var tabActive, createChartDataSet, chartTabInitialized, chartMixed, chartAcc, chartGyro, chartMag;
