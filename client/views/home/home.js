@@ -34,7 +34,10 @@
                 if (value) {
                     $(e.target).button('loading');
                     Meteor.call('mspIsConnected', value, function (error, response) {
-                        if (response) {
+                        if (!error && response) {
+                            Meteor.call('mspBoxNames', value, function (error, response) {
+                                Session.set('mspBoxNames', response);
+                            });
                             Session.set('mspActiveDeviceName', value);
                             notify('Device ' + value + ' connected', 'success');
                         } else {
@@ -110,15 +113,5 @@
             stream.removeAllListeners('update' + mspActiveDeviceName);
             mspActiveDeviceName = null;
         }
-    });
-
-    console.log(Session.get('mspActualData').status);
-
-    Meteor.call('mspBox', Session.get('mspActiveDeviceName'), function (error, response) {
-        console.log('Box', response);
-    });
-
-    Meteor.call('mspBoxNames', Session.get('mspActiveDeviceName'), function (error, response) {
-        console.log('Box names', response);
     });
 }());

@@ -75,11 +75,13 @@
                 </select>
 
                 <div class="input-group-btn">
-                    <button class="btn btn-default js-btn-refresh-devices-list" data-loading-text="<i class='glyphicon glyphicon-refresh'></i> Refreshing" type="button">
+                    <button class="btn btn-default js-btn-refresh-devices-list"
+                            data-loading-text="<i class='glyphicon glyphicon-refresh'></i> Refreshing" type="button">
                         <i class="glyphicon glyphicon-refresh"></i>
                         Refresh
                     </button>
-                    <button class="btn btn-primary js-btn-connect" data-loading-text="<i class='glyphicon glyphicon-off'></i> Connecting..." type="button">
+                    <button class="btn btn-primary js-btn-connect"
+                            data-loading-text="<i class='glyphicon glyphicon-off'></i> Connecting..." type="button">
                         <i class="glyphicon glyphicon-off"></i>
                         Connect
                     </button>
@@ -90,10 +92,16 @@
 
         <div role="tabpanel">
             <ul class="nav nav-tabs" role="tablist">
-                <li role="presentation" class="active">
+                <li role="presentation">
                     <a href="#tab-general" aria-controls="tab-general" role="tab" data-toggle="tab">
                         <i class="glyphicon glyphicon-home"></i>
                         General
+                    </a>
+                </li>
+                <li role="presentation">
+                    <a href="#tab-fly" aria-controls="tab-fly" role="tab" data-toggle="tab">
+                        <i class="glyphicon glyphicon-send"></i>
+                        Fly
                     </a>
                 </li>
                 <li role="presentation">
@@ -127,6 +135,10 @@
 
             <div id="tab-general" class="tab-pane" role="tabpanel">
                 {{> homeTabGeneral }}
+            </div>
+
+            <div id="tab-fly" class="tab-pane" role="tabpanel">
+                {{> homeTabFly}}
             </div>
 
             <div id="tab-map" class="tab-pane" role="tabpanel">

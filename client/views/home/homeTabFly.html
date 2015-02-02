@@ -1,0 +1,58 @@
+<template name="homeTabFly">
+    <div class="row">
+        <div class="col-sm-6">
+            <h2>Live video</h2>
+            <hr/>
+
+        </div>
+        <div class="col-sm-3">
+            <h2>Live Data</h2>
+            <hr/>
+
+            {{#each mspBoxNames}}
+            <span class="label {{#if mspBoxActive index}}label-success{{else}}label-default{{/if}}">{{value}}</span>
+            {{/each}}
+
+        </div>
+        <div class="col-sm-3">
+            <h2>Legend</h2>
+            <hr/>
+
+            <h3>Move</h3>
+            <hr/>
+
+            <div class="btn-legend-block">
+                <span class="btn-wrapper"><button class="btn btn-default">W</button></span> - move forward
+            </div>
+            <div class="btn-legend-block">
+                <span class="btn-wrapper"><button class="btn btn-default">S</button></span> - move backward
+            </div>
+            <div class="btn-legend-block">
+                <span class="btn-wrapper"><button class="btn btn-default">A</button></span> - move left
+            </div>
+            <div class="btn-legend-block">
+                <span class="btn-wrapper"><button class="btn btn-default">D</button></span> - move right
+            </div>
+
+            <h3>Rotate</h3>
+            <hr/>
+
+            <div class="btn-legend-block">
+                <span class="btn-wrapper"><button class="btn btn-default">Q</button></span> - rotate left
+            </div>
+            <div class="btn-legend-block">
+                <span class="btn-wrapper"><button class="btn btn-default">E</button></span> - rotate right
+            </div>
+
+            <h3>Throttle</h3>
+            <hr/>
+
+            <div class="btn-legend-block">
+                <span class="btn-wrapper"><button class="btn btn-default">+</button></span> - increase throttle
+            </div>
+            <div class="btn-legend-block">
+                <span class="btn-wrapper"><button class="btn btn-default">-</button></span> - decrease throttle
+            </div>
+        </div>
+    </div>
+</template>
