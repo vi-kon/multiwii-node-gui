@@ -4,19 +4,19 @@ This package is for MultiWii Fly Controller GUI based on [meteor](https://www.me
 
 Main features:
 
-* Fly
+* **Fly**
 	* Control multicopter form big distance via TCP/IP protocol
 	* Live video
 	* Show active sensors
 	* Show and switch current modes (boxes)
 	* Show battery status (TODO)
-* Map
+* **Map**
 	* Show GPS status
 	* Show multicopter position on map
 	* Add new, modify or delete waypoints during flight (TODO)
-* Sensor graph
+* **Sensor graph**
 	* Display live sensor data, RC data, motor throttle
-* Flight tuning
+* **Flight tuning**
 	* Read and write PID settings (TODO)
 	* Set rate and expo settings (TODO)
 
@@ -25,7 +25,8 @@ Main features:
 ### Software
 
 * web server with meteor support
-* meteor packages:  * meteor-platform
+* meteor packages:
+  * meteor-platform
   * autopublish
   * insecure
   * less
