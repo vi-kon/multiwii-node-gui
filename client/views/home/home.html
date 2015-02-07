@@ -2,10 +2,10 @@
     <div class="home">
 
         <div class="form-inline text-right">
-            {{#if isTabActive 'tab-settings'}}
+            {{#if isTabActive 'tab-flight-tuning'}}
             <div class="input-group">
                 <div class="btn-group">
-                    {{#if mspConnectedDevice}}
+                    {{#if mspIsConnected}}
                     <button class="btn btn-default js-btn-read-settings" type="button">
                         <i class="glyphicon glyphicon-floppy-save"></i>
                         Read settings
@@ -31,7 +31,7 @@
             {{#if isTabActive 'tab-log'}}
             <div class="input-group">
                 <div class="btn-group">
-                    {{#if mspConnectedDevice}}
+                    {{#if mspIsConnected}}
                     <button class="btn btn-default js-btn-read-log" type="button">
                         <i class="glyphicon glyphicon-floppy-save"></i>
                         Read log
@@ -46,7 +46,7 @@
             </div>
             {{/if}}
 
-            {{#if mspConnectedDevice}}
+            {{#if mspIsConnected}}
             <div class="input-group">
                 <span class="input-group-addon">
                     <i class="glyphicon glyphicon-refresh"></i>
@@ -54,7 +54,7 @@
                 </span>
                 <span class="input-group-addon">
                     <i class="glyphicon glyphicon-transfer"></i>
-                    Connected to {{mspConnectedDevice}}
+                    Connected to {{mspConnectedDeviceName}}
                 </span>
 
                 <div class="input-group-btn">
@@ -67,7 +67,7 @@
             {{else}}
             <div class="input-group">
                 <select class="form-control js-select-devices">
-                    {{#each mspOpenedDeviceNames}}
+                    {{#each mspAvailableDeviceNames}}
                     <option value="{{name}}">{{name}} (v{{version}})</option>
                     {{else}}
                     <option value="">No available device</option>

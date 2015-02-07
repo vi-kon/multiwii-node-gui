@@ -1,69 +1,69 @@
-(function () {
-    "use strict";
+var homeEvents, homeTabMapHelpers, tabActive, tabInitialized;
 
-    var tabActive, mapTabInitialized;
+tabInitialized = false;
 
-    Template.homeTabMap.helpers(
-        {
-            mspGpsLatitude : function () {
-                return Session.get('mspActualData').rawGPS.coord.latitude / 10000000;
-            },
-            mspGpsLongitude: function () {
-                return Session.get('mspActualData').rawGPS.coord.longitude / 10000000;
-            },
-            mspGpsAltitude : function () {
-                return Session.get('mspActualData').rawGPS.coord.altitude;
-            }
-        });
+homeEvents = {};
 
-    Template.home.events(
-        {
-            'shown.bs.tab a[data-toggle="tab"]': function (e) {
-                if ($(e.target).attr('href') === '#tab-map') {
-                    if (!mapTabInitialized) {
-                        GoogleMaps.init(
-                            {
-                                sensor: true,
-                                key   : 'AIzaSyDHwhetNXRrkFRT7Ifg3bic0IFHjpA8ZGc'
-                            },
-                            function () {
-                                var map, mapOptions, marker;
+homeEvents['shown.bs.tab a[data-toggle="tab"]'] = function (e) {
+    if ($(e.target).attr('href') !== '#tab-map') {
+        tabActive = false;
+    } else {
+        tabActive = true;
 
-                                mapOptions = {
-                                    zoom     : 18,
-                                    mapTypeId: google.maps.MapTypeId.SATELLITE,
-                                    center   : {
-                                        lat: Session.get('mspActualData').rawGPS.coord.latitude / 10000000,
-                                        lng: Session.get('mspActualData').rawGPS.coord.longitude / 10000000
-                                    }
-                                };
+        if (!tabInitialized) {
+            GoogleMaps.init(
+                {
+                    sensor: true,
+                    key   : 'AIzaSyDHwhetNXRrkFRT7Ifg3bic0IFHjpA8ZGc'
+                },
+                function () {
+                    var map, mapOptions, marker;
 
-                                map = new google.maps.Map(document.getElementById("map-canvas"), mapOptions);
+                    mapOptions = {
+                        zoom     : 18,
+                        mapTypeId: google.maps.MapTypeId.SATELLITE,
+                        center   : {
+                            lat: Session.get('mspData').rawGps.coord.latitude / 10000000,
+                            lng: Session.get('mspData').rawGps.coord.longitude / 10000000
+                        }
+                    };
 
-                                marker = new google.maps.Marker({
-                                                                    map  : map,
-                                                                    title: 'Actual Position'
-                                                                });
+                    map = new google.maps.Map(document.getElementById("map-canvas"), mapOptions);
 
-                                Tracker.autorun(function () {
-                                    if (tabActive) {
-                                        marker.setPosition({
-                                                               lat: Session.get('mspActualData').rawGPS.coord.latitude / 10000000,
-                                                               lng: Session.get('mspActualData').rawGPS.coord.longitude / 10000000
-                                                           });
-                                    }
-                                });
-                            }
-                        );
+                    marker = new google.maps.Marker({
+                                                        map  : map,
+                                                        title: 'Actual Position'
+                                                    });
 
-                        mapTabInitialized = true;
-                    }
-                    tabActive = true;
-                } else {
-                    tabActive = false;
+                    Tracker.autorun(function () {
+                        if (tabActive) {
+                            marker.setPosition({
+                                                   lat: Session.get('mspData').rawGps.coord.latitude / 10000000,
+                                                   lng: Session.get('mspData').rawGps.coord.longitude / 10000000
+                                               });
+                        }
+                    });
                 }
-            }
-        });
+            );
 
-    mapTabInitialized = false;
-}());
+            tabInitialized = true;
+        }
+    }
+};
+
+homeTabMapHelpers = {};
+
+homeTabMapHelpers.mspGpsLatitude = function () {
+    return Session.get('mspData').rawGps.coord.latitude;
+};
+
+homeTabMapHelpers.mspGpsLongitude = function () {
+    return Session.get('mspData').rawGps.coord.longitude;
+};
+
+homeTabMapHelpers.mspGpsAltitude = function () {
+    return Session.get('mspData').rawGps.coord.altitude;
+};
+
+Template.home.events(homeEvents);
+Template.homeTabMap.helpers(homeTabMapHelpers);

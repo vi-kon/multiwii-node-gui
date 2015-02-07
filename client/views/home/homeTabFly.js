@@ -1,85 +1,85 @@
-(function ($) {
-    "use strict";
+var homeEvents, homeTabFlyHelpers, tabActive;
 
-    var tabActive;
+function setControlBtnActiveToDefault() {
+    Session.set('controlBtnActive', {
+        87 : false, // w
+        83 : false, // s
+        65 : false, // a
+        68 : false, // d
+        81 : false, // q
+        69 : false, // e
+        107: false, // +
+        109: false  // -
+    });
+}
 
-    function setControlBtnActiveToDefault() {
-        Session.set('controlBtnActive', {
-            87 : false, // w
-            83 : false, // s
-            65 : false, // a
-            68 : false, // d
-            81 : false, // q
-            69 : false, // e
-            107: false, // +
-            109: false  // -
-        });
-    }
+tabActive = false;
 
-    Template.homeTabFly.helpers({
-                                    mspBoxNames       : function () {
-                                        return Session.get('mspBoxNames').map(function (value, index) {
-                                            return {index: index, value: value};
-                                        });
-                                    },
-                                    mspBoxActive      : function (boxIndex) {
-                                        return Session.get('mspActualData').status.boxActivation[boxIndex];
-                                    },
-                                    isControlBtnActive: function (button) {
-                                        return false;
-                                    }
-                                });
+homeEvents = {};
 
-    Template.home.events({
-                             'shown.bs.tab a[data-toggle="tab"]': function (e) {
-                                 if ($(e.target).attr('href') === '#tab-fly') {
-                                     tabActive = true;
-                                 } else {
-                                     tabActive = false;
-                                     setControlBtnActiveToDefault();
-                                 }
-
-                             }
-                         });
-
-    Template.homeTabFly.rendered = function () {
+homeEvents['shown.bs.tab a[data-toggle="tab"]'] = function (e) {
+    if ($(e.target).attr('href') === '#tab-fly') {
+        tabActive = true;
+    } else {
+        tabActive = false;
         setControlBtnActiveToDefault();
-        $('body')
-            .on('keydown', function (e) {
-                    var controlBtnActive;
+    }
+};
 
-                    controlBtnActive = Session.get('controlBtnActive');
+homeTabFlyHelpers = {};
 
-                    if (tabActive) {
-                        if (controlBtnActive.hasOwnProperty(e.keyCode)) {
-                            e.preventDefault();
-                            controlBtnActive[e.keyCode] = true;
-                            Session.set('controlBtnActive', controlBtnActive);
-                        }
+homeTabFlyHelpers.mspBoxNames = function () {
+    return Session.get('mspBoxNames').map(function (value, index) {
+        return {index: index, value: value};
+    });
+};
+
+homeTabFlyHelpers.mspBoxActive = function (boxIndex) {
+    return Session.get('mspData').status.boxActivation[boxIndex];
+};
+
+homeTabFlyHelpers.isControlBtnActive = function (button) {
+    return false;
+};
+
+Template.home.events(homeEvents);
+Template.homeTabFly.helpers(homeTabFlyHelpers);
+
+Template.homeTabFly.rendered = function () {
+    setControlBtnActiveToDefault();
+    $('body')
+        .on('keydown', function (e) {
+                var controlBtnActive;
+
+                controlBtnActive = Session.get('controlBtnActive');
+
+                if (tabActive) {
+                    if (controlBtnActive.hasOwnProperty(e.keyCode)) {
+                        e.preventDefault();
+                        controlBtnActive[e.keyCode] = true;
+                        Session.set('controlBtnActive', controlBtnActive);
                     }
-                    console.log(e.keyCode);
-                })
-            .on('keyup', function (e) {
-                    var controlBtnActive;
+                }
+            })
+        .on('keyup', function (e) {
+                var controlBtnActive;
 
-                    controlBtnActive = Session.get('controlBtnActive');
+                controlBtnActive = Session.get('controlBtnActive');
 
-                    if (tabActive) {
-                        if (controlBtnActive.hasOwnProperty(e.keyCode)) {
-                            e.preventDefault();
-                            controlBtnActive[e.keyCode] = false;
-                            Session.set('controlBtnActive', controlBtnActive);
-                        }
+                if (tabActive) {
+                    if (controlBtnActive.hasOwnProperty(e.keyCode)) {
+                        e.preventDefault();
+                        controlBtnActive[e.keyCode] = false;
+                        Session.set('controlBtnActive', controlBtnActive);
                     }
-                })
-        $(window).on('blur', function (e) {
-            setControlBtnActiveToDefault();
-        });
+                }
+            });
 
-        Tracker.autorun(function () {
-            console.log(Session.get('controlBtnActive'));
-        });
-    };
+    $(window).on('blur', function () {
+        setControlBtnActiveToDefault();
+    });
 
-    tabActive = false;
-}(jQuery));
+//    Tracker.autorun(function () {
+//        console.log(Session.get('controlBtnActive'));
+//    });
+};
