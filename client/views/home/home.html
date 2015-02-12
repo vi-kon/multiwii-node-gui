@@ -1,56 +1,12 @@
 <template name="home">
     <div class="home">
-
         <div class="form-inline text-right">
-            {{#if isTabActive 'tab-flight-tuning'}}
-            <div class="input-group">
-                <div class="btn-group">
-                    {{#if mspIsConnected}}
-                    <button class="btn btn-default js-btn-read-settings" type="button">
-                        <i class="glyphicon glyphicon-floppy-save"></i>
-                        Read settings
-                    </button>
-                    <button class="btn btn-danger js-btn-write-settings" type="button">
-                        <i class="glyphicon glyphicon-floppy-open"></i>
-                        Write settings
-                    </button>
-                    {{else}}
-                    <button class="btn btn-default js-btn-read-settings" type="button" disabled="disabled">
-                        <i class="glyphicon glyphicon-floppy-save"></i>
-                        Read settings
-                    </button>
-                    <button class="btn btn-danger js-btn-write-settings" type="button" disabled="disabled">
-                        <i class="glyphicon glyphicon-floppy-open"></i>
-                        Write settings
-                    </button>
-                    {{/if}}
-                </div>
-            </div>
-            {{/if}}
+            {{#if isMspConnected}}
 
-            {{#if isTabActive 'tab-log'}}
-            <div class="input-group">
-                <div class="btn-group">
-                    {{#if mspIsConnected}}
-                    <button class="btn btn-default js-btn-read-log" type="button">
-                        <i class="glyphicon glyphicon-floppy-save"></i>
-                        Read log
-                    </button>
-                    {{else}}
-                    <button class="btn btn-default js-btn-read-log" type="button" disabled="disabled">
-                        <i class="glyphicon glyphicon-floppy-save"></i>
-                        Read log
-                    </button>
-                    {{/if}}
-                </div>
-            </div>
-            {{/if}}
-
-            {{#if mspIsConnected}}
             <div class="input-group">
                 <span class="input-group-addon">
                     <i class="glyphicon glyphicon-refresh"></i>
-                    Cycle time {{mspCycleTime}}ms
+                    Cycle time <span class="msp-cycle-time">{{mspCycleTime}}ms</span>
                 </span>
                 <span class="input-group-addon">
                     <i class="glyphicon glyphicon-transfer"></i>
@@ -64,10 +20,12 @@
                     </button>
                 </div>
             </div>
+
             {{else}}
+
             <div class="input-group">
                 <select class="form-control js-select-devices">
-                    {{#each mspAvailableDeviceNames}}
+                    {{#each getAvailableMspDeviceNames}}
                     <option value="{{name}}">{{name}} (v{{version}})</option>
                     {{else}}
                     <option value="">No available device</option>
@@ -87,45 +45,16 @@
                     </button>
                 </div>
             </div>
+
             {{/if}}
         </div>
 
-        <div role="tabpanel">
+        <div class="tabpanel">
             <ul class="nav nav-tabs" role="tablist">
                 <li role="presentation">
                     <a href="#tab-general" aria-controls="tab-general" role="tab" data-toggle="tab">
                         <i class="icon-io-home"></i>
                         General
-                    </a>
-                </li>
-                <li role="presentation">
-                    <a href="#tab-fly" aria-controls="tab-fly" role="tab" data-toggle="tab">
-                        <i class="glyphicon glyphicon-send"></i>
-                        Fly
-                    </a>
-                </li>
-                <li role="presentation">
-                    <a href="#tab-map" aria-controls="tab-map" role="tab" data-toggle="tab">
-                        <i class="glyphicon glyphicon-globe"></i>
-                        Map
-                    </a>
-                </li>
-                <li role="presentation">
-                    <a href="#tab-sensor-graph" aria-controls="tab-sensor-graph" role="tab" data-toggle="tab">
-                        <i class="icon-io-stats-bars"></i>
-                        Sensor Graph
-                    </a>
-                </li>
-                <li role="presentation">
-                    <a href="#tab-flight-tuning" aria-controls="tab-flight-tuning" role="tab" data-toggle="tab">
-                        <i class="icon-io-equalizer"></i>
-                        Flight tuning
-                    </a>
-                </li>
-                <li role="presentation">
-                    <a href="#tab-log" aria-controls="tab-log" role="tab" data-toggle="tab">
-                        <i class="glyphicon glyphicon-list-alt"></i>
-                        Log
                     </a>
                 </li>
             </ul>
@@ -134,28 +63,9 @@
         <div class="tab-content">
 
             <div id="tab-general" class="tab-pane" role="tabpanel">
-                {{> homeTabGeneral }}
+
             </div>
 
-            <div id="tab-fly" class="tab-pane" role="tabpanel">
-                {{> homeTabFly}}
-            </div>
-
-            <div id="tab-map" class="tab-pane" role="tabpanel">
-                {{> homeTabMap }}
-            </div>
-
-            <div id="tab-sensor-graph" class="tab-pane" role="tabpanel">
-                {{> homeTabSensorGraph }}
-            </div>
-
-            <div id="tab-flight-tuning" class="tab-pane" role="tabpanel">
-                {{> homeTabFlightTuning }}
-            </div>
-
-            <div id="tab-log" class="tab-pane" role="tabpanel">
-                {{> homeTabLog }}
-            </div>
         </div>
     </div>
 </template>

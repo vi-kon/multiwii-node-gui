@@ -1,6 +1,4 @@
-var mspStream, homeHelpers, homeEvents, mspConnectedDeviceName;
-
-mspStream = new Meteor.Stream('msp');
+var homeHelpers, homeEvents;
 
 homeHelpers = {};
 
@@ -8,20 +6,16 @@ homeHelpers.isTabActive = function (tab) {
     return Session.get('homeActiveTab') === '#' + tab;
 };
 
-homeHelpers.mspIsConnected = function () {
-    return Session.get('mspConnectedDeviceName') !== null;
+homeHelpers.isMspDeviceConnected = function () {
+    return MspSession.connectedDeviceName;
 };
 
-homeHelpers.mspConnectedDeviceName = function () {
-    return Session.get('mspConnectedDeviceName');
+homeHelpers.getAvailableMspDeviceNames = function () {
+    return MspSession.availableDeviceNames;
 };
 
-homeHelpers.mspAvailableDeviceNames = function () {
-    return Session.get('mspAvailableDeviceNames');
-};
-
-homeHelpers.mspCycleTime = function () {
-    return Session.get('mspData').cycleTime;
+homeHelpers.getMspDataCycleTime = function () {
+    return MspSession.data.cycleTime;
 };
 
 homeEvents = {};
@@ -31,8 +25,9 @@ homeEvents['click .js-btn-refresh-devices-list'] = function (e) {
     Meteor.call('mspAvailableDeviceNames', function (error, response) {
         if (error) {
             notify('Error during device list refresh', 'error');
+            console.log(error);
         } else {
-            Session.set('mspAvailableDeviceNames', response);
+            MspSession.availableDeviceNames = response;
             notify('Device list refreshed', 'success');
         }
         $(e.target).button('reset');
@@ -46,9 +41,12 @@ homeEvents['click .js-btn-connect'] = function (e) {
         Meteor.call('mspIsConnected', name, function (error, response) {
             if (!error && response) {
                 Meteor.call('mspBoxNames', name, function (error, response) {
-                    Session.set('mspBoxNames', response);
+                    if (!error) {
+                        MspSession.boxNames = response;
+                    }
                 });
-                Session.set('mspConnectedDeviceName', name);
+                MspSession.connectedDeviceName = name;
+                MspSession.lastConnectedDeviceName = name;
                 notify('Device ' + name + ' connected', 'success');
             } else {
                 notify('Connection lost', 'error');
@@ -58,77 +56,46 @@ homeEvents['click .js-btn-connect'] = function (e) {
     } else {
         notify('No available device for connection', 'error');
     }
-    Session.set('mspLastConnectedDeviceName', null);
 };
 
 homeEvents['click .js-btn-disconnect'] = function () {
-    if (Session.get('mspConnectedDeviceName')) {
-        notify('Device ' + Session.get('mspConnectedDeviceName') + ' disconnected', 'success');
+    if (MspSession.connectedDeviceName) {
+        notify('Device ' + MspSession.connectedDeviceName + ' disconnected', 'success');
 
-        Session.set('mspConnectedDeviceName', null);
-        Session.set('mspLastConnectedDeviceName', null);
+        MspSession.connectedDeviceName = null;
+        MspSession.lastConnectedDeviceName = null;
+    } else {
+        notify('No device is connected', 'error');
     }
 };
 
-mspConnectedDeviceName = null;
+homeEvents['click .nav-tabs a'] = function (e) {
+    var element, scrollPos;
+
+    if (history.pushState) {
+        history.pushState(null, null, e.target.hash);
+    } else {
+        element = $('html, body');
+        scrollPos = element.scrollTop();
+        $(e.target).tab('show');
+        window.location.hash = e.target.hash;
+        element.scrollTop(scrollPos);
+    }
+};
+
+homeEvents['shown.bs.tab a[data-toggle="tab"]'] = function (e) {
+    Session.set('homeActiveTab', e.target.href);
+};
 
 Template.home.helpers(homeHelpers);
 Template.home.events(homeEvents);
 
 Template.home.rendered = function () {
-    var hash;
-
-    hash = window.location.hash;
-    $('ul.nav a[href="' + hash + '"]').tab('show');
+    $('.nav-tabs a[href="' + window.location.hash + '"]').tab('show');
 
     Meteor.call('mspOpenedDeviceNames', function (error, response) {
         if (!error) {
-            Session.set('mspOpenedDeviceNames', response);
+            MspSession.availableDeviceNames = response;
         }
-    });
-
-    $('body').on('click', '.nav-tabs a', function () {
-        var element, scrollPos;
-        if (history.pushState) {
-            history.pushState(null, null, this.hash);
-        } else {
-            element = $('html, body');
-            scrollPos = element.scrollTop();
-            $(this).tab('show');
-            window.location.hash = this.hash;
-            element.scrollTop(scrollPos);
-        }
-    });
-
-    $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
-        Session.set('homeActiveTab', $(e.target).attr('href'));
     });
 };
-
-mspStream.on('open', function (name) {
-    if (Session.get('mspLastConnectedDeviceName') === name) {
-        Session.set('mspConnectedDeviceName', name);
-        Session.set('mspLastConnectedDeviceName', null);
-        notify('Device ' + name + ' reconnected', 'success');
-    }
-});
-
-mspStream.on('close', function (name) {
-    if (mspConnectedDeviceName === name) {
-        Session.set('mspLastConnectedDeviceName', mspConnectedDeviceName);
-        Session.set('mspConnectedDeviceName', null);
-        notify('Connection lost', 'error');
-    }
-});
-
-Tracker.autorun(function () {
-    if (Session.get('mspConnectedDeviceName')) {
-        mspConnectedDeviceName = Session.get('mspConnectedDeviceName');
-        mspStream.on('update' + mspConnectedDeviceName, function (data) {
-            Session.set('mspData', data);
-        });
-    } else if (mspConnectedDeviceName !== null) {
-        mspStream.removeAllListeners('update' + mspConnectedDeviceName);
-        mspConnectedDeviceName = null;
-    }
-});

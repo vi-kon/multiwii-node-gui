@@ -1,34 +1,36 @@
-var homeEvents, homeTabSensorGraphHelpers, tabActive, tabInitialized, chartMixed, chartAcc, chartGyro, chartMag;
+var homeEvents, homeTabSensorGraphHelpers, tabInitialized, tabActive,
+    chartMixed, chartAcc, chartGyro, chartMag;
 
-Chart.defaults.global.responsive = true;
-
-function createChartDataSet(strokeColor, label, data) {
-    var defaultChartOptions = {
-        fillColor           : "rgba(0,0,0,0)",
-        pointColor          : "rgba(220,220,220,1)",
-        pointStrokeColor    : "#fff",
-        pointHighlightFill  : "#fff",
-        pointHighlightStroke: "rgba(220,220,220,1)"
-    };
-
-    return $.extend({}, defaultChartOptions, {
-        strokeColor: strokeColor,
-        label      : label,
-        data       : data
-    });
-}
+tabInitialized = false;
+tabActive = false;
 
 homeEvents = {};
 
 homeEvents['shown.bs.tab a[data-toggle="tab"]'] = function (e) {
-    var options;
+    var createChartDataSet, options;
 
-    if ($(e.target).attr('href') !== '#tab-sensor-graph') {
+    if (e.target.href !== '#tab-sensor-graph') {
         tabActive = false;
     } else {
         tabActive = true;
-        
+
         if (!tabInitialized) {
+            createChartDataSet = function (strokeColor, label, data) {
+                var defaultChartOptions = {
+                    fillColor           : "rgba(0,0,0,0)",
+                    pointColor          : "rgba(220,220,220,1)",
+                    pointStrokeColor    : "#fff",
+                    pointHighlightFill  : "#fff",
+                    pointHighlightStroke: "rgba(220,220,220,1)"
+                };
+
+                return $.extend({}, defaultChartOptions, {
+                    strokeColor: strokeColor,
+                    label      : label,
+                    data       : data
+                });
+            };
+
             options = {
                 id      : 'tab-sensor-graph-mixed',
                 datasets: [
@@ -85,45 +87,13 @@ homeEvents['shown.bs.tab a[data-toggle="tab"]'] = function (e) {
 homeTabSensorGraphHelpers = {};
 
 homeTabSensorGraphHelpers.rawImu = function (sensor, coord) {
-    return Session.get('mspData').rawImu[sensor][coord];
+    return MspSession.data.rawImu[sensor][coord];
 };
 
 homeTabSensorGraphHelpers.rc = function (stick) {
-    return Session.get('mspData').rc[stick];
+    return MspSession.data.rc[stick];
 };
 
 homeTabSensorGraphHelpers.rcPercentage = function (stick) {
-    return (Session.get('mspData').rc[stick] - 1000) / 10;
+    return MspSession.data.rc[stick] - 1000;
 };
-
-tabInitialized = false;
-
-Template.home.events(homeEvents);
-Template.homeTabSensorGraph.helpers(homeTabSensorGraphHelpers);
-
-Tracker.autorun(function () {
-    var time, rawImu;
-
-    time = Session.get('mspData').time;
-    rawImu = Session.get('mspData').rawImu;
-
-    if (tabActive) {
-        chartMixed.push(time, [
-            rawImu.acc.x, rawImu.acc.y, rawImu.acc.z,
-            rawImu.gyro.x, rawImu.gyro.y, rawImu.gyro.z,
-            rawImu.mag.x, rawImu.mag.y, rawImu.mag.z
-        ]);
-
-        chartAcc.push(time, [
-            rawImu.acc.x, rawImu.acc.y, rawImu.acc.z
-        ]);
-
-        chartGyro.push(time, [
-            rawImu.gyro.x, rawImu.gyro.y, rawImu.gyro.z
-        ]);
-
-        chartMag.push(time, [
-            rawImu.mag.x, rawImu.mag.y, rawImu.mag.z
-        ]);
-    }
-});
