@@ -36,7 +36,7 @@ homeEvents['click .nav-tabs a'] = function (e) {
 };
 
 homeEvents['shown.bs.tab a[data-toggle="tab"]'] = function (e) {
-    Session.set('homeActiveTab', e.target.href);
+    Session.set('homeActiveTab', e.target.hash);
 };
 
 homeEvents['click .js-btn-refresh-devices-list'] = function (e) {
