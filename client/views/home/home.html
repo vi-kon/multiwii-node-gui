@@ -2,7 +2,7 @@
     <div class="home">
         <div class="form-inline text-right command-panel">
 
-            {{#if isTabActive '#rc-command'}}
+            {{#if isTabActive '#tab-rc-settings'}}
             {{> homeCommandRcSettings }}
             {{/if}}
 
@@ -21,6 +21,7 @@
                     <button class="btn btn-danger js-btn-device-disconnect"
                             data-loading-text="Disconnecting..."
                             type="button">
+                        <i class="icon-io-switch"></i>
                         Disconnect
                     </button>
                 </div>
@@ -42,11 +43,13 @@
                     <button class="btn btn-default js-btn-refresh-devices-list"
                             data-loading-text="Refreshing"
                             type="button">
+                        <i class="icon-io-spinner11"></i>
                         Refresh
                     </button>
                     <button class="btn btn-primary js-btn-device-connect"
                             data-loading-text="Connecting..."
                             type="button">
+                        <i class="icon-io-connection"></i>
                         Connect
                     </button>
                 </div>
@@ -61,36 +64,43 @@
             <ul class="nav nav-tabs" role="tablist">
                 <li role="presentation">
                     <a href="#tab-general" aria-controls="tab-general" role="tab" data-toggle="tab">
+                        <i class="icon-io-home"></i>
                         General
                     </a>
                 </li>
                 <li role="presentation">
                     <a href="#tab-fly" aria-controls="tab-fly" role="tab" data-toggle="tab">
+                        <i class="icon-io-rocket"></i>
                         Fly
                     </a>
                 </li>
                 <li role="presentation">
                     <a href="#tab-map" aria-controls="tab-map" role="tab" data-toggle="tab">
+                        <i class="icon-io-map"></i>
                         Map
                     </a>
                 </li>
                 <li role="presentation">
                     <a href="#tab-sensor-graph" aria-controls="tab-sensor-graph" role="tab" data-toggle="tab">
+                        <i class="icon-io-stats-bars"></i>
                         Sensor Graph
                     </a>
                 </li>
                 <li role="presentation">
                     <a href="#tab-flight-tuning" aria-controls="tab-flight-tuning" role="tab" data-toggle="tab">
+                        <i class="icon-io-equalizer"></i>
                         Flight tuning
                     </a>
                 </li>
                 <li role="presentation">
                     <a href="#tab-rc-settings" aria-controls="tab-rc-settings" role="tab" data-toggle="tab">
+                        <i class="icon-io-cog"></i>
                         RC settings
                     </a>
                 </li>
                 <li role="presentation">
                     <a href="#tab-log" aria-controls="tab-log" role="tab" data-toggle="tab">
+                        <i class="icon-io-file-text"></i>
                         Log
                     </a>
                 </li>
