@@ -6,11 +6,11 @@ homeHelpers.isTabActive = function (name) {
 };
 
 homeHelpers.mspIsDeviceConnected = function () {
-    return false;
+    return Session.get('mspConnectedDeviceName');
 };
 
 homeHelpers.mspAvailableDeviceNames = function () {
-    return [];
+    return Session.get('mspAvailableDeviceNames');
 };
 
 homeHelpers.mspConnectedDeviceName = function () {
@@ -18,7 +18,7 @@ homeHelpers.mspConnectedDeviceName = function () {
 };
 
 homeHelpers.mspCycleTime = function () {
-    return 100;
+    return Session.get('mspData').cycleTime;
 };
 
 homeEvents['click .nav-tabs a'] = function (e) {
@@ -42,23 +42,74 @@ homeEvents['shown.bs.tab a[data-toggle="tab"]'] = function (e) {
 homeEvents['click .js-btn-refresh-devices-list'] = function (e) {
     $(e.target).button('loading');
 
-    $(e.target).button('reset');
+    Meteor.call('mspListAvailableDeviceNames', function (error, deviceNames) {
+        if (error) {
+            console.log(error);
+            notify('Error during device list refresh', 'error');
+        } else {
+            Session.set('mspAvailableDeviceNames', deviceNames);
+            notify('Device list refreshed', 'success');
+        }
+        $(e.target).button('reset');
+    });
 };
 
-homeEvents['click .js-btn-device-connect'] = function (e) {
-    $(e.target).button('loading');
+homeEvents['click .js-btn-device-connect'] = function (e, template) {
+    var deviceName = template.find('.js-select-devices-list').value;
 
-    $(e.target).button('reset');
+    if (deviceName) {
+        $(e.target).button('loading');
+
+        Meteor.call('mspIsDeviceAvailable', deviceName, function (error, isAvailable) {
+            if (error) {
+                console.log('mspIsDeviceAvailable', error);
+                notify('Error during connection', 'error');
+            } else if (!isAvailable) {
+                notify('Connection lost', 'error');
+            } else {
+                Meteor.call('mspDeviceBoxNames', deviceName, function (error, response) {
+                    if (error) {
+                        console.log('mspDeviceBoxNames', error);
+                    } else {
+                        Session.set('mspBoxNames', response);
+                    }
+                });
+                Session.set('mspConnectedDeviceName', deviceName);
+                notify('Device ' + deviceName + ' connected', 'success');
+            }
+        });
+
+        $(e.target).button('reset');
+    } else {
+        notify('No available device for connection', 'error');
+    }
 };
 
 homeEvents['click .js-btn-device-disconnect'] = function (e) {
-    $(e.target).button('loading');
+    var deviceName = Session.get('mspConnectedDeviceName');
 
-    $(e.target).button('reset');
+    if (deviceName) {
+        $(e.target).button('loading');
+
+        Session.set('mspConnectedDeviceName', null);
+
+        notify('Device ' + deviceName + ' disconnected', 'success');
+
+        $(e.target).button('reset');
+    }
 };
 
 Template.home.rendered = function () {
     this.$('ul.nav a[href="' + window.location.hash + '"]').tab('show');
+
+    Meteor.call('mspListAvailableDeviceNames', function (error, deviceNames) {
+        if (error) {
+            console.log('mspListAvailableDeviceNames', error);
+        } else {
+            Session.set('mspAvailableDeviceNames', deviceNames);
+        }
+    });
 };
+
 Template.home.helpers(homeHelpers);
 Template.home.events(homeEvents);

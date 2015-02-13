@@ -40,7 +40,7 @@
 
   "affix":                false,
   "alert":                false,
-  "button":               false,
+  "button":               true,
   "collapse":             false,
   "scrollspy":            false,
   "tab":                  true,

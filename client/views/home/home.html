@@ -1,7 +1,11 @@
 <template name="home">
     <div class="home">
         <div class="form-inline text-right command-panel">
-            
+
+            {{#if isTabActive '#rc-command'}}
+            {{> homeCommandRcSettings }}
+            {{/if}}
+
             {{#if mspIsDeviceConnected}}
 
             <div class="input-group">
@@ -28,7 +32,7 @@
             {{else}}
 
             <div class="input-group">
-                <select class="form-control js-select-devices">
+                <select class="form-control js-select-devices-list">
                     {{#each mspAvailableDeviceNames}}
                     <option value="{{name}}">{{name}} (v{{version}})</option>
                     {{else}}
