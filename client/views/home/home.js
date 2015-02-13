@@ -14,7 +14,7 @@ homeHelpers.mspAvailableDeviceNames = function () {
 };
 
 homeHelpers.mspConnectedDeviceName = function () {
-    return '192.168.0.1:3002';
+    return Session.get('mspConnectedDeviceName');
 };
 
 homeHelpers.mspCycleTime = function () {
