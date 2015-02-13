@@ -1,3 +1,134 @@
 <template name="home">
+    <div class="home">
+        <div class="form-inline text-right command-panel">
+            
+            {{#if mspIsDeviceConnected}}
 
+            <div class="input-group">
+                <div class="input-group-addon">
+                    <i class="glyphicon glyphicon-refresh"></i>
+                    Cycle time: <span class="cycle-time">{{mspCycleTime}}ms</span>
+                </div>
+
+                <div class="input-group-addon">
+                    <i class="glyphicon glyphicon-transfer"></i>
+                    Connected to: {{mspConnectedDeviceName}}
+                </div>
+
+                <div class="input-group-btn">
+                    <button class="btn btn-danger js-btn-device-disconnect"
+                            data-loading-text="Disconnecting..."
+                            type="button">
+                        Disconnect
+                    </button>
+                </div>
+            </div>
+            <!-- .input-group -->
+
+            {{else}}
+
+            <div class="input-group">
+                <select class="form-control js-select-devices">
+                    {{#each mspAvailableDeviceNames}}
+                    <option value="{{name}}">{{name}} (v{{version}})</option>
+                    {{else}}
+                    <option value="">No available device</option>
+                    {{/each}}
+                </select>
+
+                <div class="input-group-btn">
+                    <button class="btn btn-default js-btn-refresh-devices-list"
+                            data-loading-text="Refreshing"
+                            type="button">
+                        Refresh
+                    </button>
+                    <button class="btn btn-primary js-btn-device-connect"
+                            data-loading-text="Connecting..."
+                            type="button">
+                        Connect
+                    </button>
+                </div>
+            </div>
+            <!-- .input-group -->
+            {{/if}}
+
+        </div>
+        <!-- .command-panel -->
+
+        <div role="tabpanel">
+            <ul class="nav nav-tabs" role="tablist">
+                <li role="presentation">
+                    <a href="#tab-general" aria-controls="tab-general" role="tab" data-toggle="tab">
+                        General
+                    </a>
+                </li>
+                <li role="presentation">
+                    <a href="#tab-fly" aria-controls="tab-fly" role="tab" data-toggle="tab">
+                        Fly
+                    </a>
+                </li>
+                <li role="presentation">
+                    <a href="#tab-map" aria-controls="tab-map" role="tab" data-toggle="tab">
+                        Map
+                    </a>
+                </li>
+                <li role="presentation">
+                    <a href="#tab-sensor-graph" aria-controls="tab-sensor-graph" role="tab" data-toggle="tab">
+                        Sensor Graph
+                    </a>
+                </li>
+                <li role="presentation">
+                    <a href="#tab-flight-tuning" aria-controls="tab-flight-tuning" role="tab" data-toggle="tab">
+                        Flight tuning
+                    </a>
+                </li>
+                <li role="presentation">
+                    <a href="#tab-rc-settings" aria-controls="tab-rc-settings" role="tab" data-toggle="tab">
+                        RC settings
+                    </a>
+                </li>
+                <li role="presentation">
+                    <a href="#tab-log" aria-controls="tab-log" role="tab" data-toggle="tab">
+                        Log
+                    </a>
+                </li>
+            </ul>
+        </div>
+        <!-- .tabpanel -->
+
+        <div class="tab-content">
+
+            <div id="tab-general" class="tab-pane" role="tabpanel">
+                <!--{{> homeTabGeneral }}-->
+            </div>
+
+            <div id="tab-fly" class="tab-pane" role="tabpanel">
+                <!--{{> homeTabFly}}-->
+            </div>
+
+            <div id="tab-map" class="tab-pane" role="tabpanel">
+                <!--{{> homeTabMap }}-->
+            </div>
+
+            <div id="tab-sensor-graph" class="tab-pane" role="tabpanel">
+                <!--{{> homeTabSensorGraph }}-->
+            </div>
+
+            <div id="tab-flight-tuning" class="tab-pane" role="tabpanel">
+                <!--{{> homeTabFlightTuning }}-->
+            </div>
+
+            <div id="tab-rc-settings" class="tab-pane" role="tabpanel">
+                <!--{{> homeTabRcSettings }}-->
+            </div>
+
+            <div id="tab-log" class="tab-pane" role="tabpanel">
+                <!--{{> homeTabLog }}-->
+            </div>
+
+        </div>
+        <!-- .tab-content -->
+
+    </div>
+    <!-- .home -->
 </template>
