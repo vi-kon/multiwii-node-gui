@@ -2,6 +2,10 @@
     <div class="home">
         <div class="form-inline text-right command-panel">
 
+            {{#if isTabActive '#tab-fly'}}
+            {{> homeCommandTabFly}}
+            {{/if}}
+
             {{#if isTabActive '#tab-rc-settings'}}
             {{> homeCommandRcSettings }}
             {{/if}}
@@ -115,7 +119,7 @@
             </div>
 
             <div id="tab-fly" class="tab-pane" role="tabpanel">
-                <!--{{> homeTabFly}}-->
+                {{> homeTabFly}}
             </div>
 
             <div id="tab-map" class="tab-pane" role="tabpanel">

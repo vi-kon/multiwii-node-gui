@@ -1,0 +1,30 @@
+<template name="homeCommandTabFly">
+    {{#if mspIsDeviceConnected}}
+    <div class="input-group">
+        <div class="btn-group">
+            <button class="btn btn-primary js-btn-read-device-rc-settings"
+                    data-loading-text="Reading..."
+                    type="button">
+                <i class="icon-io-upload"></i>
+                Arm
+            </button>
+        </div>
+    </div>
+    {{/if}}
+</template>
+
+<template name="homeTabFly">
+    <div class="tab-fly">
+        <div class="row">
+            <div class="col-sm-6">
+
+            </div>
+            <div class="col-sm-2">
+
+            </div>
+            <div class="col-sm-4">
+                <div id="map-canvas-fly" style="height: 500px;"></div>
+            </div>
+        </div>
+    </div>
+</template>
