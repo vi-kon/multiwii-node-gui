@@ -5,10 +5,6 @@ homeHelpers.isTabActive = function (name) {
     return Session.get('homeActiveTab') === name;
 };
 
-homeHelpers.mspIsDeviceConnected = function () {
-    return Session.get('mspConnectedDeviceName');
-};
-
 homeHelpers.mspAvailableDeviceNames = function () {
     return Session.get('mspAvailableDeviceNames');
 };
@@ -18,7 +14,11 @@ homeHelpers.mspConnectedDeviceName = function () {
 };
 
 homeHelpers.mspCycleTime = function () {
-    return Session.get('mspData').cycleTime;
+    if (Session.get('mspData')) {
+        return Session.get('mspData').cycleTime;
+    }
+
+    return 0;
 };
 
 homeEvents['click .nav-tabs a'] = function (e) {

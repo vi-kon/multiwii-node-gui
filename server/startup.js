@@ -30,7 +30,7 @@ Meteor.startup(function () {
             if (devices.hasOwnProperty(name)) {
                 ident = Meteor.sync(function (callback) {
                     devices[name].ident({}, callback);
-                });
+                }).result;
                 keys.push({
                               name: name, version: ident.version
                           });
@@ -48,7 +48,27 @@ Meteor.startup(function () {
         if (methods.mspIsDeviceAvailable(deviceName)) {
             return Meteor.sync(function (callback) {
                 server.getDevice(deviceName).boxNames({}, callback);
-            });
+            }).result;
+        }
+
+        throw new Meteor.Error('Device is not connected');
+    };
+
+    methods.mspDeviceBox = function (deviceName) {
+        if (methods.mspIsDeviceAvailable(deviceName)) {
+            return Meteor.sync(function (callback) {
+                server.getDevice(deviceName).box({}, callback);
+            }).result;
+        }
+
+        throw new Meteor.Error('Device is not connected');
+    };
+
+    methods.mspSetDeviceBox = function (deviceName, box) {
+        if (methods.mspIsDeviceAvailable(deviceName)) {
+            return Meteor.sync(function (callback) {
+                server.getDevice(deviceName).setBox(box, {}, callback);
+            }).result;
         }
 
         throw new Meteor.Error('Device is not connected');

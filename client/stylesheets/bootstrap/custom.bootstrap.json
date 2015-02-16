@@ -6,7 +6,7 @@
   "type":                 true,
   "code":                 false,
   "grid":                 true,
-  "tables":               false,
+  "tables":               true,
   "forms":                true,
   "buttons":              true,
 
@@ -18,7 +18,7 @@
   "breadcrumbs":          false,
   "pagination":           false,
   "pager":                false,
-  "labels":               false,
+  "labels":               true,
   "badges":               false,
   "jumbotron":            false,
   "thumbnails":           false,
@@ -33,7 +33,7 @@
 
   "component-animations": false,
   "dropdowns":            false,
-  "modals":               false,
+  "modals":               true,
   "tooltip":              false,
   "popovers":             false,
   "carousel":             false,

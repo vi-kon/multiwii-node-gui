@@ -1,4 +1,49 @@
 .home {
+  .table {
+    > thead > tr > th {
+      text-align: center;
+      vertical-align: middle;
+    }
+
+    > tbody > tr > th {
+      vertical-align: middle;
+    }
+
+    tr:nth-child(2) th:nth-child(3n+1),
+    tr:not(:nth-child(2)) th:not(:first-child),
+    td:nth-child(3n+2) {
+      border-left: 1px solid #dddddd;
+    }
+
+    .progress {
+      margin-bottom: 0;
+    }
+  }
+
+  .rc-progress {
+    .rc-vl {
+      float: left;
+      width: 25%;
+      height: 5px;
+      border-left: 1px solid #dddddd;
+      border-right: 1px solid #dddddd;
+    }
+
+    .rc-vl:first-child {
+      margin-left: 25%;
+    }
+  }
+
+  .rc-progress:after {
+    content: '';
+    display: block;
+    clear: both;
+  }
+
+  .nav-tabs {
+    margin-bottom: 20px;
+  }
+
   .command-panel {
     .cycle-time {
       display: inline-block;
