@@ -1,0 +1,300 @@
+<template name="homeTabSensorGraph">
+    <div class="tab-sensor-graph">
+        <div class="row">
+            <div class="col-sm-6">
+                <div class="row">
+                    <div class="col-sm-9">
+                        <canvas id="tab-sensor-graph-mixed"></canvas>
+                    </div>
+
+                    <div class="col-sm-3">
+                        <strong>Accelerometer</strong>
+
+                        <div class="checkbox">
+                            <label>
+                                <span class="chart-label-line" style="background: #1f77b4"></span>
+                                <span class="chart-label">Roll</span>
+                                <span class="chart-acc-roll">{{mspRawImu "acc" "x"}}</span>
+                            </label>
+                        </div>
+                        <div class="checkbox">
+                            <label>
+                                <span class="chart-label-line" style="background: #ff7f0e"></span>
+                                <span class="chart-label">Pitch</span>
+                                <span class="chart-acc-pitch">{{mspRawImu "acc" "y"}}</span>
+                            </label>
+                        </div>
+                        <div class="checkbox">
+                            <label>
+                                <span class="chart-label-line" style="background: #2ca02c"></span>
+                                <span class="chart-label">Z</span>
+                                <span class="chart-acc-z">{{mspRawImu "acc" "z"}}</span>
+                            </label>
+                        </div>
+
+                        <strong>Gyroscope</strong>
+
+                        <div class="checkbox">
+                            <label>
+                                <span class="chart-label-line" style="background: #d62728"></span>
+                                <span class="chart-label">Roll</span>
+                                <span class="chart-gyro-roll">{{mspRawImu "gyro" "x"}}</span>
+                            </label>
+                        </div>
+                        <div class="checkbox">
+                            <label>
+                                <span class="chart-label-line" style="background: #9467bd"></span>
+                                <span class="chart-label">Pitch</span>
+                                <span class="chart-gyro-pitch">{{mspRawImu "gyro" "y"}}</span>
+                            </label>
+                        </div>
+                        <div class="checkbox">
+                            <label>
+                                <span class="chart-label-line" style="background: #8c564b"></span>
+                                <span class="chart-label">Yaw</span>
+                                <span class="chart-gyro-yaw">{{mspRawImu "gyro" "z"}}</span>
+                            </label>
+                        </div>
+
+                        <strong>Magnetometer</strong>
+
+                        <div class="checkbox">
+                            <label>
+                                <span class="chart-label-line" style="background: #e377c2"></span>
+                                <span class="chart-label">Roll</span>
+                                <span class="chart-mag-roll">{{mspRawImu "mag" "x"}}</span>
+                            </label>
+                        </div>
+                        <div class="checkbox">
+                            <label>
+                                <span class="chart-label-line" style="background: #7f7f7f"></span>
+                                <span class="chart-label">Pitch</span>
+                                <span class="chart-mag-pitch">{{mspRawImu "mag" "y"}}</span>
+                            </label>
+                        </div>
+                        <div class="checkbox">
+                            <label>
+                                <span class="chart-label-line" style="background: #bcbd22"></span>
+                                <span class="chart-label">Yaw</span>
+                                <span class="chart-mag-yaw">{{mspRawImu "mag" "z"}}</span>
+                            </label>
+                        </div>
+                    </div>
+                    <!-- .col-sm-6 -->
+                </div>
+                <!-- .row -->
+            </div>
+            <!-- .col-sm-6 -->
+            <div class="col-sm-6">
+                <div class="row">
+                    <label class="col-sm-2 control-label">Throttle</label>
+
+                    <div class="col-sm-2">{{mspRc 'throttle'}}</div>
+
+                    <div class="col-sm-8">
+                        <div class="rc-progress">
+                            <div class="rc-vl"></div>
+                            <div class="rc-vl"></div>
+                        </div>
+                        <div class="progress">
+                            <div class="progress-bar rc-throttle-progressbar" role="progressbar"
+                                 style="width: {{mspRcPercentage 'throttle'}}%;"
+                                 aria-valuemin="1000"
+                                 aria-valuemax="2000"
+                                 aria-valuenow="{{mspRc 'throttle'}}"></div>
+                        </div>
+                        <div class="rc-progress">
+                            <div class="rc-vl"></div>
+                            <div class="rc-vl"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <label class="col-sm-2 control-label">Pitch</label>
+
+                    <div class="col-sm-2">{{mspRc 'pitch'}}</div>
+
+                    <div class="col-sm-8">
+                        <div class="rc-progress">
+                            <div class="rc-vl"></div>
+                            <div class="rc-vl"></div>
+                        </div>
+                        <div class="progress">
+                            <div class="progress-bar rc-pitch-progressbar" role="progressbar"
+                                 style="width: {{mspRcPercentage 'pitch'}}%;"
+                                 aria-valuemin="1000"
+                                 aria-valuemax="2000"
+                                 aria-valuenow="{{mspRc 'pitch'}}"></div>
+                        </div>
+                        <div class="rc-progress">
+                            <div class="rc-vl"></div>
+                            <div class="rc-vl"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <label class="col-sm-2 control-label">Roll</label>
+
+                    <div class="col-sm-2">{{mspRc 'roll'}}</div>
+
+                    <div class="col-sm-8">
+                        <div class="rc-progress">
+                            <div class="rc-vl"></div>
+                            <div class="rc-vl"></div>
+                        </div>
+                        <div class="progress">
+                            <div class="progress-bar rc-roll-progressbar" role="progressbar"
+                                 style="width: {{mspRcPercentage 'roll'}}%;"
+                                 aria-valuemin="1000"
+                                 aria-valuemax="2000"
+                                 aria-valuenow="{{mspRc 'roll'}}"></div>
+                        </div>
+                        <div class="rc-progress">
+                            <div class="rc-vl"></div>
+                            <div class="rc-vl"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <label class="col-sm-2 control-label">Yaw</label>
+
+                    <div class="col-sm-2">{{mspRc 'yaw'}}</div>
+
+                    <div class="col-sm-8">
+                        <div class="rc-progress">
+                            <div class="rc-vl"></div>
+                            <div class="rc-vl"></div>
+                        </div>
+                        <div class="progress">
+                            <div class="progress-bar rc-yaw-progressbar" role="progressbar"
+                                 style="width: {{mspRcPercentage 'yaw'}}%;"
+                                 aria-valuemin="1000"
+                                 aria-valuemax="2000"
+                                 aria-valuenow="{{mspRc 'yaw'}}"></div>
+                        </div>
+                        <div class="rc-progress">
+                            <div class="rc-vl"></div>
+                            <div class="rc-vl"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <label class="col-sm-2 control-label">Aux 1</label>
+
+                    <div class="col-sm-2">{{mspRc 'aux1'}}</div>
+
+                    <div class="col-sm-8">
+                        <div class="rc-progress">
+                            <div class="rc-vl"></div>
+                            <div class="rc-vl"></div>
+                        </div>
+                        <div class="progress">
+                            <div class="progress-bar rc-aux1-progressbar" role="progressbar"
+                                 style="width: {{mspRcPercentage 'aux1'}}%;"
+                                 aria-valuemin="1000"
+                                 aria-valuemax="2000"
+                                 aria-valuenow="{{mspRc 'aux1'}}"></div>
+                        </div>
+                        <div class="rc-progress">
+                            <div class="rc-vl"></div>
+                            <div class="rc-vl"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <label class="col-sm-2 control-label">Aux 2</label>
+
+                    <div class="col-sm-2"><span class="rc-aux2">{{mspRc 'aux2'}}</span></div>
+
+                    <div class="col-sm-8">
+                        <div class="rc-progress">
+                            <div class="rc-vl"></div>
+                            <div class="rc-vl"></div>
+                        </div>
+                        <div class="progress">
+                            <div class="progress-bar rc-aux2-progressbar" role="progressbar"
+                                 style="width: {{mspRcPercentage 'aux2'}}%;"
+                                 aria-valuemin="1000"
+                                 aria-valuemax="2000"
+                                 aria-valuenow="{{mspRc 'aux2'}}"></div>
+                        </div>
+                        <div class="rc-progress">
+                            <div class="rc-vl"></div>
+                            <div class="rc-vl"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <label class="col-sm-2 control-label">Aux 3</label>
+
+                    <div class="col-sm-2">{{mspRc "aux3"}}</div>
+
+                    <div class="col-sm-8">
+                        <div class="rc-progress">
+                            <div class="rc-vl"></div>
+                            <div class="rc-vl"></div>
+                        </div>
+                        <div class="progress">
+                            <div class="progress-bar rc-aux3-progressbar" role="progressbar"
+                                 aria-valuemin="1000"
+                                 aria-valuemax="2000"
+                                 aria-valuenow="{{mspRc 'aux3'}}"
+                                 style="width: {{mspRcPercentage 'aux3'}}%;"></div>
+                        </div>
+                        <div class="rc-progress">
+                            <div class="rc-vl"></div>
+                            <div class="rc-vl"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <label class="col-sm-2 control-label">Aux 4</label>
+
+                    <div class="col-sm-2"><span class="rc-aux4">{{mspRc 'aux4'}}</span></div>
+
+                    <div class="col-sm-8">
+                        <div class="rc-progress">
+                            <div class="rc-vl"></div>
+                            <div class="rc-vl"></div>
+                        </div>
+                        <div class="progress">
+                            <div class="progress-bar rc-aux4-progressbar" role="progressbar"
+                                 style="width: {{mspRcPercentage 'aux4'}}%;"
+                                 aria-valuemin="1000"
+                                 aria-valuemax="2000"
+                                 aria-valuenow="{{mspRc 'aux4'}}"></div>
+                        </div>
+                        <div class="rc-progress">
+                            <div class="rc-vl"></div>
+                            <div class="rc-vl"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- .col-sm-6 -->
+        </div>
+        <!-- .row -->
+
+        <div class="row">
+            <div class="col-sm-3">
+                <strong>Accelerometer</strong>
+                <canvas id="tab-sensor-graph-acc"></canvas>
+            </div>
+            <div class="col-sm-3">
+                <strong>Gyroscope</strong>
+                <canvas id="tab-sensor-graph-gyro"></canvas>
+            </div>
+            <div class="col-sm-3">
+                <strong>Magnetometer</strong>
+                <canvas id="tab-sensor-graph-mag"></canvas>
+            </div>
+        </div>
+        <!-- .row -->
+    </div>
+</template>

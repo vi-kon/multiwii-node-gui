@@ -25,3 +25,11 @@ Template.registerHelper('mspBoxActive', function (boxIndex) {
 
     return false;
 });
+
+Template.registerHelper('mspRawImu', function (sensor, coord) {
+    if (Session.get('mspData')) {
+        return Session.get('mspData').rawImu[sensor][coord];
+    }
+
+    return 0;
+});

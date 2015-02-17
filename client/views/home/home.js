@@ -92,6 +92,10 @@ homeEvents['click .js-btn-device-disconnect'] = function (e) {
         $(e.target).button('loading');
 
         Session.set('mspConnectedDeviceName', null);
+        Session.set('mspData', null);
+        Session.set('mspBox', null);
+        Session.set('mspBoxNames', null);
+        Session.set('mspBoxChanges', null);
 
         notify('Device ' + deviceName + ' disconnected', 'success');
 

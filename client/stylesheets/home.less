@@ -35,6 +35,36 @@
 
   }
 
+  .tab-sensor-graph {
+    canvas {
+      width: 100% !important;
+    }
+
+    .progress {
+      margin-bottom: 0;
+    }
+
+    .progress + .rc-progress {
+      .rc-vl {
+        margin-bottom: 10px;
+      }
+    }
+
+    .chart-label {
+      font-weight: bold;
+      width: 50px;
+      display: inline-block;
+    }
+
+    .chart-label-line {
+      width: 20px;
+      height: 5px;
+      display: inline-block;
+      margin-bottom: 2px;
+      border-radius: 2px;
+    }
+  }
+
   .tab-rc-settings {
     .table {
       > thead > tr > th {
@@ -44,12 +74,6 @@
 
       > tbody > tr > th {
         vertical-align: middle;
-      }
-
-      tr:nth-child(2) th:nth-child(3n+1),
-      tr:not(:nth-child(2)) th:not(:first-child),
-      td:nth-child(3n+2) {
-        border-left: 1px solid #dddddd;
       }
 
       .progress {
