@@ -1,13 +1,11 @@
 // THIS FILE IS GENERATED, DO NOT MODIFY IT!
 // It includes the bootstrap modules configured in client/stylesheets/bootstrap/custom.bootstrap.json.
 // You may need to use 'meteor add less' if the styles are not loaded.
-
 // If it throws errors your bootstrap.import.less is probably invalid.
 // To fix that remove that file and then recover your changes.
-
 @import "custom.bootstrap.import.less";
-@icon-font-path: "/packages/nemo64_bootstrap-data/bootstrap/fonts/";
 
+@icon-font-path: "/packages/nemo64_bootstrap-data/bootstrap/fonts/";
 
 // @import "bootstrap/less/normalize.less"
 /*! normalize.css v3.0.2 | MIT License | git.io/normalize */
@@ -438,13 +436,10 @@ th {
   padding: 0;
 }
 
-
-
 // @import "bootstrap/less/scaffolding.less"
 //
 // Scaffolding
 // --------------------------------------------------
-
 
 // Reset the box-sizing
 //
@@ -454,17 +449,17 @@ th {
 * {
   .box-sizing(border-box);
 }
+
 *:before,
 *:after {
   .box-sizing(border-box);
 }
 
-
 // Body reset
 
 html {
   font-size: 10px;
-  -webkit-tap-highlight-color: rgba(0,0,0,0);
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
 }
 
 body {
@@ -485,7 +480,6 @@ textarea {
   line-height: inherit;
 }
 
-
 // Links
 
 a {
@@ -503,7 +497,6 @@ a {
   }
 }
 
-
 // Figures
 //
 // We reset this here because previously Normalize had no `figure` margins. This
@@ -512,7 +505,6 @@ a {
 figure {
   margin: 0;
 }
-
 
 // Images
 
@@ -550,16 +542,14 @@ img {
   border-radius: 50%; // set radius in percents
 }
 
-
 // Horizontal rules
 
 hr {
-  margin-top:    @line-height-computed;
+  margin-top: @line-height-computed;
   margin-bottom: @line-height-computed;
   border: 0;
   border-top: 1px solid @hr-border;
 }
-
 
 // Only display content to screen readers
 //
@@ -572,7 +562,7 @@ hr {
   margin: -1px;
   padding: 0;
   overflow: hidden;
-  clip: rect(0,0,0,0);
+  clip: rect(0, 0, 0, 0);
   border: 0;
 }
 
@@ -592,13 +582,10 @@ hr {
   }
 }
 
-
-
 // @import "bootstrap/less/type.less"
 //
 // Typography
 // --------------------------------------------------
-
 
 // Headings
 // -------------------------
@@ -629,6 +616,7 @@ h3, .h3 {
     font-size: 65%;
   }
 }
+
 h4, .h4,
 h5, .h5,
 h6, .h6 {
@@ -641,13 +629,29 @@ h6, .h6 {
   }
 }
 
-h1, .h1 { font-size: @font-size-h1; }
-h2, .h2 { font-size: @font-size-h2; }
-h3, .h3 { font-size: @font-size-h3; }
-h4, .h4 { font-size: @font-size-h4; }
-h5, .h5 { font-size: @font-size-h5; }
-h6, .h6 { font-size: @font-size-h6; }
+h1, .h1 {
+  font-size: @font-size-h1;
+}
 
+h2, .h2 {
+  font-size: @font-size-h2;
+}
+
+h3, .h3 {
+  font-size: @font-size-h3;
+}
+
+h4, .h4 {
+  font-size: @font-size-h4;
+}
+
+h5, .h5 {
+  font-size: @font-size-h5;
+}
+
+h6, .h6 {
+  font-size: @font-size-h6;
+}
 
 // Body text
 // -------------------------
@@ -667,7 +671,6 @@ p {
   }
 }
 
-
 // Emphasis & misc
 // -------------------------
 
@@ -684,33 +687,60 @@ mark,
 }
 
 // Alignment
-.text-left           { text-align: left; }
-.text-right          { text-align: right; }
-.text-center         { text-align: center; }
-.text-justify        { text-align: justify; }
-.text-nowrap         { white-space: nowrap; }
+.text-left {
+  text-align: left;
+}
+
+.text-right {
+  text-align: right;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.text-justify {
+  text-align: justify;
+}
+
+.text-nowrap {
+  white-space: nowrap;
+}
 
 // Transformation
-.text-lowercase      { text-transform: lowercase; }
-.text-uppercase      { text-transform: uppercase; }
-.text-capitalize     { text-transform: capitalize; }
+.text-lowercase {
+  text-transform: lowercase;
+}
+
+.text-uppercase {
+  text-transform: uppercase;
+}
+
+.text-capitalize {
+  text-transform: capitalize;
+}
 
 // Contextual colors
 .text-muted {
   color: @text-muted;
 }
+
 .text-primary {
   .text-emphasis-variant(@brand-primary);
 }
+
 .text-success {
   .text-emphasis-variant(@state-success-text);
 }
+
 .text-info {
   .text-emphasis-variant(@state-info-text);
 }
+
 .text-warning {
   .text-emphasis-variant(@state-warning-text);
 }
+
 .text-danger {
   .text-emphasis-variant(@state-danger-text);
 }
@@ -724,19 +754,22 @@ mark,
   color: #fff;
   .bg-variant(@brand-primary);
 }
+
 .bg-success {
   .bg-variant(@state-success-bg);
 }
+
 .bg-info {
   .bg-variant(@state-info-bg);
 }
+
 .bg-warning {
   .bg-variant(@state-warning-bg);
 }
+
 .bg-danger {
   .bg-variant(@state-danger-bg);
 }
-
 
 // Page header
 // -------------------------
@@ -746,7 +779,6 @@ mark,
   margin: (@line-height-computed * 2) 0 @line-height-computed;
   border-bottom: 1px solid @page-header-border-color;
 }
-
 
 // Lists
 // -------------------------
@@ -787,13 +819,16 @@ dl {
   margin-top: 0; // Remove browser default
   margin-bottom: @line-height-computed;
 }
+
 dt,
 dd {
   line-height: @line-height-base;
 }
+
 dt {
   font-weight: bold;
 }
+
 dd {
   margin-left: 0; // Undo browser default
 }
@@ -816,23 +851,24 @@ dd {
       text-align: right;
       .text-overflow();
     }
+
     dd {
       margin-left: @dl-horizontal-offset;
     }
   }
 }
 
-
 // Misc
 // -------------------------
 
 // Abbreviations and acronyms
 abbr[title],
-// Add data-* attribute to help out our tooltip plugin, per https://github.com/twbs/bootstrap/issues/5257
+  // Add data-* attribute to help out our tooltip plugin, per https://github.com/twbs/bootstrap/issues/5257
 abbr[data-original-title] {
   cursor: help;
   border-bottom: 1px dotted @abbr-border-color;
 }
+
 .initialism {
   font-size: 90%;
   text-transform: uppercase;
@@ -884,7 +920,9 @@ blockquote.pull-right {
   footer,
   small,
   .small {
-    &:before { content: ''; }
+    &:before {
+      content: '';
+    }
     &:after {
       content: '\00A0 \2014'; // nbsp, em dash
     }
@@ -898,13 +936,10 @@ address {
   line-height: @line-height-base;
 }
 
-
-
 // @import "bootstrap/less/grid.less"
 //
 // Grid system
 // --------------------------------------------------
-
 
 // Container widths
 //
@@ -924,7 +959,6 @@ address {
   }
 }
 
-
 // Fluid container
 //
 // Utilizes the mixin meant for fixed width containers, but without any defined
@@ -934,7 +968,6 @@ address {
   .container-fixed();
 }
 
-
 // Row
 //
 // Rows contain and clear the floats of your columns.
@@ -943,13 +976,11 @@ address {
   .make-row();
 }
 
-
 // Columns
 //
 // Common styles for small and large grid columns
 
 .make-grid-columns();
-
 
 // Extra small grid
 //
@@ -957,7 +988,6 @@ address {
 // smartphones.
 
 .make-grid(xs);
-
 
 // Small grid
 //
@@ -968,7 +998,6 @@ address {
   .make-grid(sm);
 }
 
-
 // Medium grid
 //
 // Columns, offsets, pushes, and pulls for the desktop device range.
@@ -976,7 +1005,6 @@ address {
 @media (min-width: @screen-md-min) {
   .make-grid(md);
 }
-
 
 // Large grid
 //
@@ -986,27 +1014,25 @@ address {
   .make-grid(lg);
 }
 
-
-
 // @import "bootstrap/less/tables.less"
 //
 // Tables
 // --------------------------------------------------
 
-
 table {
   background-color: @table-bg;
 }
+
 caption {
   padding-top: @table-cell-padding;
   padding-bottom: @table-cell-padding;
   color: @text-muted;
   text-align: left;
 }
+
 th {
   text-align: left;
 }
-
 
 // Baseline styles
 
@@ -1055,7 +1081,6 @@ th {
   }
 }
 
-
 // Condensed table w/ half padding
 
 .table-condensed {
@@ -1070,7 +1095,6 @@ th {
     }
   }
 }
-
 
 // Bordered version
 //
@@ -1096,7 +1120,6 @@ th {
   }
 }
 
-
 // Zebra-striping
 //
 // Default zebra-stripe styles (alternating gray and transparent backgrounds)
@@ -1106,7 +1129,6 @@ th {
     background-color: @table-bg-accent;
   }
 }
-
 
 // Hover effect
 //
@@ -1118,7 +1140,6 @@ th {
   }
 }
 
-
 // Table cell sizing
 //
 // Reset default table behavior
@@ -1128,6 +1149,7 @@ table col[class*="col-"] {
   float: none;
   display: table-column;
 }
+
 table {
   td,
   th {
@@ -1138,7 +1160,6 @@ table {
     }
   }
 }
-
 
 // Table backgrounds
 //
@@ -1151,7 +1172,6 @@ table {
 .table-row-variant(info; @state-info-bg);
 .table-row-variant(warning; @state-warning-bg);
 .table-row-variant(danger; @state-danger-bg);
-
 
 // Responsive tables
 //
@@ -1224,13 +1244,10 @@ table {
   }
 }
 
-
-
 // @import "bootstrap/less/forms.less"
 //
 // Forms
 // --------------------------------------------------
-
 
 // Normalize non-controls
 //
@@ -1264,7 +1281,6 @@ label {
   margin-bottom: 5px;
   font-weight: bold;
 }
-
 
 // Normalize form controls
 //
@@ -1318,7 +1334,6 @@ output {
   color: @input-color;
 }
 
-
 // Common form controls
 //
 // Shared size and type resets for form controls. Apply `.form-control` to any
@@ -1353,7 +1368,7 @@ output {
   background-image: none; // Reset unusual Firefox-on-Android default style; see https://github.com/necolas/normalize.css/issues/214
   border: 1px solid @input-border;
   border-radius: @input-border-radius;
-  .box-shadow(inset 0 1px 1px rgba(0,0,0,.075));
+  .box-shadow(inset 0 1px 1px rgba(0, 0, 0, .075));
   .transition(~"border-color ease-in-out .15s, box-shadow ease-in-out .15s");
 
   // Customize the `:focus` state to imitate native WebKit styles.
@@ -1381,7 +1396,6 @@ output {
   }
 }
 
-
 // Search inputs in iOS
 //
 // This overrides the extra rounded corners on search inputs in iOS so that our
@@ -1392,7 +1406,6 @@ output {
 input[type="search"] {
   -webkit-appearance: none;
 }
-
 
 // Special styles for iOS temporal inputs
 //
@@ -1435,7 +1448,6 @@ _:-ms-fullscreen, :root input[type="month"] {
   }
 }
 
-
 // Form groups
 //
 // Designed to help with the organization and spacing of vertical forms. For
@@ -1444,7 +1456,6 @@ _:-ms-fullscreen, :root input[type="month"] {
 .form-group {
   margin-bottom: 15px;
 }
-
 
 // Checkboxes and radios
 //
@@ -1465,6 +1476,7 @@ _:-ms-fullscreen, :root input[type="month"] {
     cursor: pointer;
   }
 }
+
 .radio input[type="radio"],
 .radio-inline input[type="radio"],
 .checkbox input[type="checkbox"],
@@ -1489,6 +1501,7 @@ _:-ms-fullscreen, :root input[type="month"] {
   font-weight: normal;
   cursor: pointer;
 }
+
 .radio-inline + .radio-inline,
 .checkbox-inline + .checkbox-inline {
   margin-top: 0;
@@ -1507,6 +1520,7 @@ input[type="checkbox"] {
     cursor: @cursor-disabled;
   }
 }
+
 // These classes are used directly on <label>s
 .radio-inline,
 .checkbox-inline {
@@ -1515,6 +1529,7 @@ input[type="checkbox"] {
     cursor: @cursor-disabled;
   }
 }
+
 // These classes are used on elements with <label> descendants
 .radio,
 .checkbox {
@@ -1525,7 +1540,6 @@ input[type="checkbox"] {
     }
   }
 }
-
 
 // Static form control text
 //
@@ -1546,7 +1560,6 @@ input[type="checkbox"] {
   }
 }
 
-
 // Form control sizing
 //
 // Build on `.form-control` with modifier classes to decrease or increase the
@@ -1562,7 +1575,6 @@ input[type="checkbox"] {
   .input-size(@input-height-large; @padding-large-vertical; @padding-large-horizontal; @font-size-large; @line-height-large; @input-border-radius-large);
 }
 
-
 // Form control feedback states
 //
 // Apply contextual and semantic states to individual form controls.
@@ -1576,6 +1588,7 @@ input[type="checkbox"] {
     padding-right: (@input-height-base * 1.25);
   }
 }
+
 // Feedback icon (requires .glyphicon classes)
 .form-control-feedback {
   position: absolute;
@@ -1589,11 +1602,13 @@ input[type="checkbox"] {
   text-align: center;
   pointer-events: none;
 }
+
 .input-lg + .form-control-feedback {
   width: @input-height-large;
   height: @input-height-large;
   line-height: @input-height-large;
 }
+
 .input-sm + .form-control-feedback {
   width: @input-height-small;
   height: @input-height-small;
@@ -1604,9 +1619,11 @@ input[type="checkbox"] {
 .has-success {
   .form-control-validation(@state-success-text; @state-success-text; @state-success-bg);
 }
+
 .has-warning {
   .form-control-validation(@state-warning-text; @state-warning-text; @state-warning-bg);
 }
+
 .has-error {
   .form-control-validation(@state-danger-text; @state-danger-text; @state-danger-bg);
 }
@@ -1615,13 +1632,12 @@ input[type="checkbox"] {
 .has-feedback label {
 
   & ~ .form-control-feedback {
-     top: (@line-height-computed + 5); // Height of the `label` and its margin
+    top: (@line-height-computed + 5); // Height of the `label` and its margin
   }
   &.sr-only ~ .form-control-feedback {
-     top: 0;
+    top: 0;
   }
 }
-
 
 // Help text
 //
@@ -1634,7 +1650,6 @@ input[type="checkbox"] {
   margin-bottom: 10px;
   color: lighten(@text-color, 25%); // lighten the text some for contrast
 }
-
 
 // Inline forms
 //
@@ -1705,6 +1720,7 @@ input[type="checkbox"] {
         padding-left: 0;
       }
     }
+
     .radio input[type="radio"],
     .checkbox input[type="checkbox"] {
       position: relative;
@@ -1717,7 +1733,6 @@ input[type="checkbox"] {
     }
   }
 }
-
 
 // Horizontal forms
 //
@@ -1787,13 +1802,10 @@ input[type="checkbox"] {
   }
 }
 
-
-
 // @import "bootstrap/less/buttons.less"
 //
 // Buttons
 // --------------------------------------------------
-
 
 // Base styles
 // --------------------------------------------------
@@ -1832,7 +1844,7 @@ input[type="checkbox"] {
   &.active {
     outline: 0;
     background-image: none;
-    .box-shadow(inset 0 3px 5px rgba(0,0,0,.125));
+    .box-shadow(inset 0 3px 5px rgba(0, 0, 0, .125));
   }
 
   &.disabled,
@@ -1845,33 +1857,36 @@ input[type="checkbox"] {
   }
 }
 
-
 // Alternate buttons
 // --------------------------------------------------
 
 .btn-default {
   .button-variant(@btn-default-color; @btn-default-bg; @btn-default-border);
 }
+
 .btn-primary {
   .button-variant(@btn-primary-color; @btn-primary-bg; @btn-primary-border);
 }
+
 // Success appears as green
 .btn-success {
   .button-variant(@btn-success-color; @btn-success-bg; @btn-success-border);
 }
+
 // Info appears as blue-green
 .btn-info {
   .button-variant(@btn-info-color; @btn-info-bg; @btn-info-border);
 }
+
 // Warning appears as orange
 .btn-warning {
   .button-variant(@btn-warning-color; @btn-warning-bg; @btn-warning-border);
 }
+
 // Danger and error appear as red
 .btn-danger {
   .button-variant(@btn-danger-color; @btn-danger-bg; @btn-danger-border);
 }
-
 
 // Link buttons
 // -------------------------
@@ -1912,7 +1927,6 @@ input[type="checkbox"] {
   }
 }
 
-
 // Button Sizes
 // --------------------------------------------------
 
@@ -1920,14 +1934,15 @@ input[type="checkbox"] {
   // line-height: ensure even-numbered height of button next to large input
   .button-size(@padding-large-vertical; @padding-large-horizontal; @font-size-large; @line-height-large; @border-radius-large);
 }
+
 .btn-sm {
   // line-height: ensure proper height of button next to small input
   .button-size(@padding-small-vertical; @padding-small-horizontal; @font-size-small; @line-height-small; @border-radius-small);
 }
+
 .btn-xs {
   .button-size(@padding-xs-vertical; @padding-xs-horizontal; @font-size-small; @line-height-small; @border-radius-small);
 }
-
 
 // Block button
 // --------------------------------------------------
@@ -1950,8 +1965,6 @@ input[type="button"] {
     width: 100%;
   }
 }
-
-
 
 // @import "bootstrap/less/button-groups.less"
 //
@@ -2018,6 +2031,7 @@ input[type="button"] {
     .border-right-radius(0);
   }
 }
+
 // Need .dropdown-toggle since :last-child doesn't apply given a .dropdown-menu immediately after it
 .btn-group > .btn:last-child:not(:first-child),
 .btn-group > .dropdown-toggle:not(:first-child) {
@@ -2028,15 +2042,18 @@ input[type="button"] {
 .btn-group > .btn-group {
   float: left;
 }
+
 .btn-group > .btn-group:not(:first-child):not(:last-child) > .btn {
   border-radius: 0;
 }
+
 .btn-group > .btn-group:first-child {
   > .btn:last-child,
   > .dropdown-toggle {
     .border-right-radius(0);
   }
 }
+
 .btn-group > .btn-group:last-child > .btn:first-child {
   .border-left-radius(0);
 }
@@ -2047,15 +2064,18 @@ input[type="button"] {
   outline: 0;
 }
 
-
 // Sizing
 //
 // Remix the default button sizing classes into new ones for easier manipulation.
 
-.btn-group-xs > .btn { &:extend(.btn-xs); }
-.btn-group-sm > .btn { &:extend(.btn-sm); }
-.btn-group-lg > .btn { &:extend(.btn-lg); }
+.btn-group-xs > .btn { &:extend(.btn-xs);
+}
 
+.btn-group-sm > .btn { &:extend(.btn-sm);
+}
+
+.btn-group-lg > .btn { &:extend(.btn-lg);
+}
 
 // Split button dropdowns
 // ----------------------
@@ -2065,6 +2085,7 @@ input[type="button"] {
   padding-left: 8px;
   padding-right: 8px;
 }
+
 .btn-group > .btn-lg + .dropdown-toggle {
   padding-left: 12px;
   padding-right: 12px;
@@ -2073,7 +2094,7 @@ input[type="button"] {
 // The clickable button for toggling the menu
 // Remove the gradient and set the same inset shadow as the :active state
 .btn-group.open .dropdown-toggle {
-  .box-shadow(inset 0 3px 5px rgba(0,0,0,.125));
+  .box-shadow(inset 0 3px 5px rgba(0, 0, 0, .125));
 
   // Show no shadow for `.btn-link` since it has no other button styles.
   &.btn-link {
@@ -2081,21 +2102,21 @@ input[type="button"] {
   }
 }
 
-
 // Reposition the caret
 .btn .caret {
   margin-left: 0;
 }
+
 // Carets in other button sizes
 .btn-lg .caret {
   border-width: @caret-width-large @caret-width-large 0;
   border-bottom-width: 0;
 }
+
 // Upside down carets for .dropup
 .dropup .btn-lg .caret {
   border-width: 0 @caret-width-large @caret-width-large;
 }
-
 
 // Vertical button groups
 // ----------------------
@@ -2140,19 +2161,21 @@ input[type="button"] {
     .border-top-radius(0);
   }
 }
+
 .btn-group-vertical > .btn-group:not(:first-child):not(:last-child) > .btn {
   border-radius: 0;
 }
+
 .btn-group-vertical > .btn-group:first-child:not(:last-child) {
   > .btn:last-child,
   > .dropdown-toggle {
     .border-bottom-radius(0);
   }
 }
+
 .btn-group-vertical > .btn-group:last-child:not(:first-child) > .btn:first-child {
   .border-top-radius(0);
 }
-
 
 // Justified button groups
 // ----------------------
@@ -2177,7 +2200,6 @@ input[type="button"] {
   }
 }
 
-
 // Checkbox and radio options
 //
 // In order to support the browser's form validation feedback, powered by the
@@ -2196,13 +2218,11 @@ input[type="button"] {
     input[type="radio"],
     input[type="checkbox"] {
       position: absolute;
-      clip: rect(0,0,0,0);
+      clip: rect(0, 0, 0, 0);
       pointer-events: none;
     }
   }
 }
-
-
 
 // @import "bootstrap/less/input-groups.less"
 //
@@ -2249,12 +2269,12 @@ input[type="button"] {
 .input-group-lg > .input-group-btn > .btn {
   .input-lg();
 }
+
 .input-group-sm > .form-control,
 .input-group-sm > .input-group-addon,
 .input-group-sm > .input-group-btn > .btn {
   .input-sm();
 }
-
 
 // Display as table-cell
 // -------------------------
@@ -2267,6 +2287,7 @@ input[type="button"] {
     border-radius: 0;
   }
 }
+
 // Addon and addon wrapper for buttons
 .input-group-addon,
 .input-group-btn {
@@ -2317,9 +2338,11 @@ input[type="button"] {
 .input-group-btn:last-child > .btn-group:not(:last-child) > .btn {
   .border-right-radius(0);
 }
+
 .input-group-addon:first-child {
   border-right: 0;
 }
+
 .input-group .form-control:last-child,
 .input-group-addon:last-child,
 .input-group-btn:last-child > .btn,
@@ -2329,6 +2352,7 @@ input[type="button"] {
 .input-group-btn:first-child > .btn-group:not(:first-child) > .btn {
   .border-left-radius(0);
 }
+
 .input-group-addon:last-child {
   border-left: 0;
 }
@@ -2372,13 +2396,10 @@ input[type="button"] {
   }
 }
 
-
-
 // @import "bootstrap/less/navs.less"
 //
 // Navs
 // --------------------------------------------------
-
 
 // Base class
 // --------------------------------------------------
@@ -2445,7 +2466,6 @@ input[type="button"] {
   }
 }
 
-
 // Tabs
 // -------------------------
 
@@ -2488,7 +2508,6 @@ input[type="button"] {
   }
 }
 
-
 // Pills
 // -------------------------
 .nav-pills {
@@ -2515,7 +2534,6 @@ input[type="button"] {
   }
 }
 
-
 // Stacked pills
 .nav-stacked {
   > li {
@@ -2526,7 +2544,6 @@ input[type="button"] {
     }
   }
 }
-
 
 // Nav variations
 // --------------------------------------------------
@@ -2584,6 +2601,7 @@ input[type="button"] {
       border-bottom: 1px solid @nav-tabs-justified-link-border-color;
       border-radius: @border-radius-base @border-radius-base 0 0;
     }
+
     > .active > a,
     > .active > a:hover,
     > .active > a:focus {
@@ -2591,7 +2609,6 @@ input[type="button"] {
     }
   }
 }
-
 
 // Tabbable tabs
 // -------------------------
@@ -2608,7 +2625,6 @@ input[type="button"] {
   }
 }
 
-
 // Dropdowns
 // -------------------------
 
@@ -2620,13 +2636,10 @@ input[type="button"] {
   .border-top-radius(0);
 }
 
-
-
 // @import "bootstrap/less/utilities.less"
 //
 // Utility classes
 // --------------------------------------------------
-
 
 // Floats
 // -------------------------
@@ -2634,16 +2647,18 @@ input[type="button"] {
 .clearfix {
   .clearfix();
 }
+
 .center-block {
   .center-block();
 }
+
 .pull-right {
   float: right !important;
 }
+
 .pull-left {
   float: left !important;
 }
-
 
 // Toggling content
 // -------------------------
@@ -2652,16 +2667,18 @@ input[type="button"] {
 .hide {
   display: none !important;
 }
+
 .show {
   display: block !important;
 }
+
 .invisible {
   visibility: hidden;
 }
+
 .text-hide {
   .text-hide();
 }
-
 
 // Hide from screenreaders and browsers
 //
@@ -2672,7 +2689,6 @@ input[type="button"] {
   visibility: hidden !important;
 }
 
-
 // For Affix plugin
 // -------------------------
 
@@ -2680,13 +2696,10 @@ input[type="button"] {
   position: fixed;
 }
 
-
-
 // @import "bootstrap/less/navbar.less"
 //
 // Navbars
 // --------------------------------------------------
-
 
 // Wrapper and base class
 //
@@ -2707,7 +2720,6 @@ input[type="button"] {
   }
 }
 
-
 // Navbar heading
 //
 // Groups `.navbar-brand` and `.navbar-toggle` into a single component for easy
@@ -2720,7 +2732,6 @@ input[type="button"] {
     float: left;
   }
 }
-
 
 // Navbar collapse (body)
 //
@@ -2735,9 +2746,9 @@ input[type="button"] {
 .navbar-collapse {
   overflow-x: visible;
   padding-right: @navbar-padding-horizontal;
-  padding-left:  @navbar-padding-horizontal;
+  padding-left: @navbar-padding-horizontal;
   border-top: 1px solid transparent;
-  box-shadow: inset 0 1px 0 rgba(255,255,255,.1);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .1);
   &:extend(.clearfix all);
   -webkit-overflow-scrolling: touch;
 
@@ -2784,7 +2795,6 @@ input[type="button"] {
   }
 }
 
-
 // Both navbar header and collapse
 //
 // When a container is present, change the behavior of the header and collapse.
@@ -2794,15 +2804,14 @@ input[type="button"] {
   > .navbar-header,
   > .navbar-collapse {
     margin-right: -@navbar-padding-horizontal;
-    margin-left:  -@navbar-padding-horizontal;
+    margin-left: -@navbar-padding-horizontal;
 
     @media (min-width: @grid-float-breakpoint) {
       margin-right: 0;
-      margin-left:  0;
+      margin-left: 0;
     }
   }
 }
-
 
 //
 // Navbar alignment options
@@ -2833,16 +2842,17 @@ input[type="button"] {
     border-radius: 0;
   }
 }
+
 .navbar-fixed-top {
   top: 0;
   border-width: 0 0 1px;
 }
+
 .navbar-fixed-bottom {
   bottom: 0;
   margin-bottom: 0; // override .navbar defaults
   border-width: 1px 0 0;
 }
-
 
 // Brand/project name
 
@@ -2869,7 +2879,6 @@ input[type="button"] {
     }
   }
 }
-
 
 // Navbar toggle
 //
@@ -2909,7 +2918,6 @@ input[type="button"] {
   }
 }
 
-
 // Navbar nav links
 //
 // Builds on top of the `.nav` components with its own modifier class to make
@@ -2919,7 +2927,7 @@ input[type="button"] {
   margin: (@navbar-padding-vertical / 2) -@navbar-padding-horizontal;
 
   > li > a {
-    padding-top:    10px;
+    padding-top: 10px;
     padding-bottom: 10px;
     line-height: @line-height-computed;
   }
@@ -2956,13 +2964,12 @@ input[type="button"] {
     > li {
       float: left;
       > a {
-        padding-top:    @navbar-padding-vertical;
+        padding-top: @navbar-padding-vertical;
         padding-bottom: @navbar-padding-vertical;
       }
     }
   }
 }
-
 
 // Navbar form
 //
@@ -2975,7 +2982,7 @@ input[type="button"] {
   padding: 10px @navbar-padding-horizontal;
   border-top: 1px solid transparent;
   border-bottom: 1px solid transparent;
-  @shadow: inset 0 1px 0 rgba(255,255,255,.1), 0 1px 0 rgba(255,255,255,.1);
+  @shadow: inset 0 1px 0 rgba(255, 255, 255, .1), 0 1px 0 rgba(255, 255, 255, .1);
   .box-shadow(@shadow);
 
   // Mixin behavior for optimum display
@@ -3006,7 +3013,6 @@ input[type="button"] {
   }
 }
 
-
 // Dropdown menus
 
 // Menu position and menu carets
@@ -3014,11 +3020,11 @@ input[type="button"] {
   margin-top: 0;
   .border-top-radius(0);
 }
+
 // Menu position and menu caret support for dropups via extra dropup class
 .navbar-fixed-bottom .navbar-nav > li > .dropdown-menu {
   .border-bottom-radius(0);
 }
-
 
 // Buttons in navbars
 //
@@ -3035,7 +3041,6 @@ input[type="button"] {
   }
 }
 
-
 // Text in navbars
 //
 // Add a class to make any element properly align itself vertically within the navbars.
@@ -3050,7 +3055,6 @@ input[type="button"] {
   }
 }
 
-
 // Component alignment
 //
 // Repurpose the pull utilities as their own navbar utilities to avoid specificity
@@ -3060,7 +3064,10 @@ input[type="button"] {
 // Declared after the navbar components to ensure more specificity on the margins.
 
 @media (min-width: @grid-float-breakpoint) {
-  .navbar-left  { .pull-left(); }
+  .navbar-left {
+    .pull-left();
+  }
+
   .navbar-right {
     .pull-right();
     margin-right: -@navbar-padding-horizontal;
@@ -3070,7 +3077,6 @@ input[type="button"] {
     }
   }
 }
-
 
 // Alternate navbars
 // --------------------------------------------------
@@ -3179,7 +3185,6 @@ input[type="button"] {
       }
     }
   }
-
 
   // Links in navbars
   //
@@ -3343,8 +3348,6 @@ input[type="button"] {
   }
 }
 
-
-
 // @import "bootstrap/less/labels.less"
 //
 // Labels
@@ -3411,29 +3414,33 @@ input[type="button"] {
   .label-variant(@label-danger-bg);
 }
 
-
-
 // @import "bootstrap/less/progress-bars.less"
 //
 // Progress bars
 // --------------------------------------------------
-
 
 // Bar animations
 // -------------------------
 
 // WebKit
 @-webkit-keyframes progress-bar-stripes {
-  from  { background-position: 40px 0; }
-  to    { background-position: 0 0; }
+  from {
+    background-position: 40px 0;
+  }
+  to {
+    background-position: 0 0;
+  }
 }
 
 // Spec and IE10+
 @keyframes progress-bar-stripes {
-  from  { background-position: 40px 0; }
-  to    { background-position: 0 0; }
+  from {
+    background-position: 40px 0;
+  }
+  to {
+    background-position: 0 0;
+  }
 }
-
 
 // Bar itself
 // -------------------------
@@ -3445,7 +3452,7 @@ input[type="button"] {
   margin-bottom: @line-height-computed;
   background-color: @progress-bg;
   border-radius: @progress-border-radius;
-  .box-shadow(inset 0 1px 2px rgba(0,0,0,.1));
+  .box-shadow(inset 0 1px 2px rgba(0, 0, 0, .1));
 }
 
 // Bar of progress
@@ -3458,7 +3465,7 @@ input[type="button"] {
   color: @progress-bar-color;
   text-align: center;
   background-color: @progress-bar-bg;
-  .box-shadow(inset 0 -1px 0 rgba(0,0,0,.15));
+  .box-shadow(inset 0 -1px 0 rgba(0, 0, 0, .15));
   .transition(width .6s ease);
 }
 
@@ -3482,7 +3489,6 @@ input[type="button"] {
   .animation(progress-bar-stripes 2s linear infinite);
 }
 
-
 // Variations
 // -------------------------
 
@@ -3502,7 +3508,271 @@ input[type="button"] {
   .progress-bar-variant(@progress-bar-danger-bg);
 }
 
+// @import "bootstrap/less/panels.less"
+//
+// Panels
+// --------------------------------------------------
 
+// Base class
+.panel {
+  margin-bottom: @line-height-computed;
+  background-color: @panel-bg;
+  border: 1px solid transparent;
+  border-radius: @panel-border-radius;
+  .box-shadow(0 1px 1px rgba(0, 0, 0, .05));
+}
+
+// Panel contents
+.panel-body {
+  padding: @panel-body-padding;
+  &:extend(.clearfix all);
+}
+
+// Optional heading
+.panel-heading {
+  padding: @panel-heading-padding;
+  border-bottom: 1px solid transparent;
+  .border-top-radius((@panel-border-radius - 1));
+
+  > .dropdown .dropdown-toggle {
+    color: inherit;
+  }
+}
+
+// Within heading, strip any `h*` tag of its default margins for spacing.
+.panel-title {
+  margin-top: 0;
+  margin-bottom: 0;
+  font-size: ceil((@font-size-base * 1.125));
+  color: inherit;
+
+  > a {
+    color: inherit;
+  }
+}
+
+// Optional footer (stays gray in every modifier class)
+.panel-footer {
+  padding: @panel-footer-padding;
+  background-color: @panel-footer-bg;
+  border-top: 1px solid @panel-inner-border;
+  .border-bottom-radius((@panel-border-radius - 1));
+}
+
+// List groups in panels
+//
+// By default, space out list group content from panel headings to account for
+// any kind of custom content between the two.
+
+.panel {
+  > .list-group,
+  > .panel-collapse > .list-group {
+    margin-bottom: 0;
+
+    .list-group-item {
+      border-width: 1px 0;
+      border-radius: 0;
+    }
+
+    // Add border top radius for first one
+    &:first-child {
+      .list-group-item:first-child {
+        border-top: 0;
+        .border-top-radius((@panel-border-radius - 1));
+      }
+    }
+    // Add border bottom radius for last one
+    &:last-child {
+      .list-group-item:last-child {
+        border-bottom: 0;
+        .border-bottom-radius((@panel-border-radius - 1));
+      }
+    }
+  }
+}
+
+// Collapse space between when there's no additional content.
+.panel-heading + .list-group {
+  .list-group-item:first-child {
+    border-top-width: 0;
+  }
+}
+
+.list-group + .panel-footer {
+  border-top-width: 0;
+}
+
+// Tables in panels
+//
+// Place a non-bordered `.table` within a panel (not within a `.panel-body`) and
+// watch it go full width.
+
+.panel {
+  > .table,
+  > .table-responsive > .table,
+  > .panel-collapse > .table {
+    margin-bottom: 0;
+
+    caption {
+      padding-left: @panel-body-padding;
+      padding-right: @panel-body-padding;
+    }
+  }
+  // Add border top radius for first one
+  > .table:first-child,
+  > .table-responsive:first-child > .table:first-child {
+    .border-top-radius((@panel-border-radius - 1));
+
+    > thead:first-child,
+    > tbody:first-child {
+      > tr:first-child {
+        border-top-left-radius: (@panel-border-radius - 1);
+        border-top-right-radius: (@panel-border-radius - 1);
+
+        td:first-child,
+        th:first-child {
+          border-top-left-radius: (@panel-border-radius - 1);
+        }
+        td:last-child,
+        th:last-child {
+          border-top-right-radius: (@panel-border-radius - 1);
+        }
+      }
+    }
+  }
+  // Add border bottom radius for last one
+  > .table:last-child,
+  > .table-responsive:last-child > .table:last-child {
+    .border-bottom-radius((@panel-border-radius - 1));
+
+    > tbody:last-child,
+    > tfoot:last-child {
+      > tr:last-child {
+        border-bottom-left-radius: (@panel-border-radius - 1);
+        border-bottom-right-radius: (@panel-border-radius - 1);
+
+        td:first-child,
+        th:first-child {
+          border-bottom-left-radius: (@panel-border-radius - 1);
+        }
+        td:last-child,
+        th:last-child {
+          border-bottom-right-radius: (@panel-border-radius - 1);
+        }
+      }
+    }
+  }
+  > .panel-body + .table,
+  > .panel-body + .table-responsive,
+  > .table + .panel-body,
+  > .table-responsive + .panel-body {
+    border-top: 1px solid @table-border-color;
+  }
+  > .table > tbody:first-child > tr:first-child th,
+  > .table > tbody:first-child > tr:first-child td {
+    border-top: 0;
+  }
+  > .table-bordered,
+  > .table-responsive > .table-bordered {
+    border: 0;
+    > thead,
+    > tbody,
+    > tfoot {
+      > tr {
+        > th:first-child,
+        > td:first-child {
+          border-left: 0;
+        }
+        > th:last-child,
+        > td:last-child {
+          border-right: 0;
+        }
+      }
+    }
+    > thead,
+    > tbody {
+      > tr:first-child {
+        > td,
+        > th {
+          border-bottom: 0;
+        }
+      }
+    }
+    > tbody,
+    > tfoot {
+      > tr:last-child {
+        > td,
+        > th {
+          border-bottom: 0;
+        }
+      }
+    }
+  }
+  > .table-responsive {
+    border: 0;
+    margin-bottom: 0;
+  }
+}
+
+// Collapsable panels (aka, accordion)
+//
+// Wrap a series of panels in `.panel-group` to turn them into an accordion with
+// the help of our collapse JavaScript plugin.
+
+.panel-group {
+  margin-bottom: @line-height-computed;
+
+  // Tighten up margin so it's only between panels
+  .panel {
+    margin-bottom: 0;
+    border-radius: @panel-border-radius;
+
+    + .panel {
+      margin-top: 5px;
+    }
+  }
+
+  .panel-heading {
+    border-bottom: 0;
+
+    + .panel-collapse > .panel-body,
+    + .panel-collapse > .list-group {
+      border-top: 1px solid @panel-inner-border;
+    }
+  }
+
+  .panel-footer {
+    border-top: 0;
+    + .panel-collapse .panel-body {
+      border-bottom: 1px solid @panel-inner-border;
+    }
+  }
+}
+
+// Contextual variations
+.panel-default {
+  .panel-variant(@panel-default-border; @panel-default-text; @panel-default-heading-bg; @panel-default-border);
+}
+
+.panel-primary {
+  .panel-variant(@panel-primary-border; @panel-primary-text; @panel-primary-heading-bg; @panel-primary-border);
+}
+
+.panel-success {
+  .panel-variant(@panel-success-border; @panel-success-text; @panel-success-heading-bg; @panel-success-border);
+}
+
+.panel-info {
+  .panel-variant(@panel-info-border; @panel-info-text; @panel-info-heading-bg; @panel-info-border);
+}
+
+.panel-warning {
+  .panel-variant(@panel-warning-border; @panel-warning-text; @panel-warning-heading-bg; @panel-warning-border);
+}
+
+.panel-danger {
+  .panel-variant(@panel-danger-border; @panel-danger-text; @panel-danger-heading-bg; @panel-danger-border);
+}
 
 // @import "bootstrap/less/modals.less"
 //
@@ -3540,8 +3810,11 @@ input[type="button"] {
     .translate(0, -25%);
     .transition-transform(~"0.3s ease-out");
   }
-  &.in .modal-dialog { .translate(0, 0) }
+  &.in .modal-dialog {
+    .translate(0, 0)
+  }
 }
+
 .modal-open .modal {
   overflow-x: hidden;
   overflow-y: auto;
@@ -3561,7 +3834,7 @@ input[type="button"] {
   border: 1px solid @modal-content-fallback-border-color; //old browsers fallback (ie8 etc)
   border: 1px solid @modal-content-border-color;
   border-radius: @border-radius-large;
-  .box-shadow(0 3px 9px rgba(0,0,0,.5));
+  .box-shadow(0 3px 9px rgba(0, 0, 0, .5));
   background-clip: padding-box;
   // Remove focus outline from opened modal
   outline: 0;
@@ -3576,8 +3849,12 @@ input[type="button"] {
   left: 0;
   background-color: @modal-backdrop-bg;
   // Fade for backdrop
-  &.fade { .opacity(0); }
-  &.in { .opacity(@modal-backdrop-opacity); }
+  &.fade {
+    .opacity(0);
+  }
+  &.in {
+    .opacity(@modal-backdrop-opacity);
+  }
 }
 
 // Modal header
@@ -3587,6 +3864,7 @@ input[type="button"] {
   border-bottom: 1px solid @modal-header-border-color;
   min-height: (@modal-title-padding + @modal-title-line-height);
 }
+
 // Close icon
 .modal-header .close {
   margin-top: -2px;
@@ -3643,25 +3921,27 @@ input[type="button"] {
     width: @modal-md;
     margin: 30px auto;
   }
+
   .modal-content {
-    .box-shadow(0 5px 15px rgba(0,0,0,.5));
+    .box-shadow(0 5px 15px rgba(0, 0, 0, .5));
   }
 
   // Modal sizes
-  .modal-sm { width: @modal-sm; }
+  .modal-sm {
+    width: @modal-sm;
+  }
 }
 
 @media (min-width: @screen-md-min) {
-  .modal-lg { width: @modal-lg; }
+  .modal-lg {
+    width: @modal-lg;
+  }
 }
-
-
 
 // @import "bootstrap/less/responsive-utilities.less"
 //
 // Responsive: Utility classes
 // --------------------------------------------------
-
 
 // IE10 in Windows (Phone) 8
 //
@@ -3681,7 +3961,6 @@ input[type="button"] {
 @-ms-viewport {
   width: device-width;
 }
-
 
 // Visibility utilities
 // Note: Deprecated .visible-xs, .visible-sm, .visible-md, and .visible-lg as of v3.2.0
@@ -3712,16 +3991,19 @@ input[type="button"] {
     .responsive-visibility();
   }
 }
+
 .visible-xs-block {
   @media (max-width: @screen-xs-max) {
     display: block !important;
   }
 }
+
 .visible-xs-inline {
   @media (max-width: @screen-xs-max) {
     display: inline !important;
   }
 }
+
 .visible-xs-inline-block {
   @media (max-width: @screen-xs-max) {
     display: inline-block !important;
@@ -3733,16 +4015,19 @@ input[type="button"] {
     .responsive-visibility();
   }
 }
+
 .visible-sm-block {
   @media (min-width: @screen-sm-min) and (max-width: @screen-sm-max) {
     display: block !important;
   }
 }
+
 .visible-sm-inline {
   @media (min-width: @screen-sm-min) and (max-width: @screen-sm-max) {
     display: inline !important;
   }
 }
+
 .visible-sm-inline-block {
   @media (min-width: @screen-sm-min) and (max-width: @screen-sm-max) {
     display: inline-block !important;
@@ -3754,16 +4039,19 @@ input[type="button"] {
     .responsive-visibility();
   }
 }
+
 .visible-md-block {
   @media (min-width: @screen-md-min) and (max-width: @screen-md-max) {
     display: block !important;
   }
 }
+
 .visible-md-inline {
   @media (min-width: @screen-md-min) and (max-width: @screen-md-max) {
     display: inline !important;
   }
 }
+
 .visible-md-inline-block {
   @media (min-width: @screen-md-min) and (max-width: @screen-md-max) {
     display: inline-block !important;
@@ -3775,16 +4063,19 @@ input[type="button"] {
     .responsive-visibility();
   }
 }
+
 .visible-lg-block {
   @media (min-width: @screen-lg-min) {
     display: block !important;
   }
 }
+
 .visible-lg-inline {
   @media (min-width: @screen-lg-min) {
     display: inline !important;
   }
 }
+
 .visible-lg-inline-block {
   @media (min-width: @screen-lg-min) {
     display: inline-block !important;
@@ -3796,22 +4087,24 @@ input[type="button"] {
     .responsive-invisibility();
   }
 }
+
 .hidden-sm {
   @media (min-width: @screen-sm-min) and (max-width: @screen-sm-max) {
     .responsive-invisibility();
   }
 }
+
 .hidden-md {
   @media (min-width: @screen-md-min) and (max-width: @screen-md-max) {
     .responsive-invisibility();
   }
 }
+
 .hidden-lg {
   @media (min-width: @screen-lg-min) {
     .responsive-invisibility();
   }
 }
-
 
 // Print utilities
 //
@@ -3825,6 +4118,7 @@ input[type="button"] {
     .responsive-visibility();
   }
 }
+
 .visible-print-block {
   display: none !important;
 
@@ -3832,6 +4126,7 @@ input[type="button"] {
     display: block !important;
   }
 }
+
 .visible-print-inline {
   display: none !important;
 
@@ -3839,6 +4134,7 @@ input[type="button"] {
     display: inline !important;
   }
 }
+
 .visible-print-inline-block {
   display: none !important;
 

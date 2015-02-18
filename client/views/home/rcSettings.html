@@ -1,33 +1,33 @@
 <template name="homeCommandRcSettings">
     {{#if mspIsDeviceConnected}}
-    <div class="input-group">
-        <div class="btn-group">
-            <div class="input-group-addon">
-                RC settings
-            </div>
+        <div class="input-group">
+            <div class="btn-group">
+                <div class="input-group-addon">
+                    RC settings
+                </div>
 
-            <div class="input-group-btn">
-                <button class="btn btn-primary js-btn-read-device-rc-settings"
-                        data-loading-text="Reading..."
-                        type="button">
-                    <i class="icon-io-upload"></i>
-                    Read
-                </button>
-                <button class="btn btn-danger js-btn-write-device-rc-settings"
-                        data-loading-text="Writing..."
-                        type="button">
-                    <i class="icon-io-download"></i>
-                    Write
-                </button>
-                <button class="btn btn-warning js-btn-reset-device-rc-settings"
-                        data-loading-text="Resetting..."
-                        type="button">
-                    <i class="icon-io-spinner11"></i>
-                    Reset
-                </button>
+                <div class="input-group-btn">
+                    <button class="btn btn-primary js-btn-read-device-rc-settings"
+                            data-loading-text="Reading..."
+                            type="button">
+                        <i class="icon-io-upload"></i>
+                        Read
+                    </button>
+                    <button class="btn btn-danger js-btn-write-device-rc-settings"
+                            data-loading-text="Writing..."
+                            type="button">
+                        <i class="icon-io-download"></i>
+                        Write
+                    </button>
+                    <button class="btn btn-warning js-btn-reset-device-rc-settings"
+                            data-loading-text="Resetting..."
+                            type="button">
+                        <i class="icon-io-spinner11"></i>
+                        Reset
+                    </button>
+                </div>
             </div>
         </div>
-    </div>
     {{/if}}
 </template>
 
@@ -136,77 +136,89 @@
             </thead>
             <tbody>
             {{#if mspIsDeviceConnected}}
-            {{#each boxNames}}
-            <tr class="{{#if mspBoxActive index}}success{{/if}}">
-                <th>
-                    {{value}}
-                </th>
-                <td>
-                    <button class="btn btn-block btn-sm {{boxClass index 'aux1' 'low'}} js-btn-box" type="button">
-                        Low
-                    </button>
-                </td>
-                <td>
-                    <button class="btn btn-block btn-sm {{boxClass index 'aux1' 'mid'}} js-btn-box" type="button">
-                        Mid
-                    </button>
-                </td>
-                <td>
-                    <button class="btn btn-block btn-sm {{boxClass index 'aux1' 'high'}} js-btn-box" type="button">
-                        High
-                    </button>
-                </td>
-                <td>
-                    <button class="btn btn-block btn-sm {{boxClass index 'aux2' 'low'}} js-btn-box" type="button">
-                        Low
-                    </button>
-                </td>
-                <td>
-                    <button class="btn btn-block btn-sm {{boxClass index 'aux2' 'mid'}} js-btn-box" type="button">
-                        Mid
-                    </button>
-                </td>
-                <td>
-                    <button class="btn btn-block btn-sm {{boxClass index 'aux2' 'high'}} js-btn-box" type="button">
-                        High
-                    </button>
-                </td>
-                <td>
-                    <button class="btn btn-block btn-sm {{boxClass index 'aux3' 'low'}} js-btn-box" type="button">
-                        Low
-                    </button>
-                </td>
-                <td>
-                    <button class="btn btn-block btn-sm {{boxClass index 'aux3' 'mid'}} js-btn-box" type="button">
-                        Mid
-                    </button>
-                </td>
-                <td>
-                    <button class="btn btn-block btn-sm {{boxClass index 'aux3' 'high'}} js-btn-box" type="button">
-                        High
-                    </button>
-                </td>
-                <td>
-                    <button class="btn btn-block btn-sm {{boxClass index 'aux4' 'low'}} js-btn-box" type="button">
-                        Low
-                    </button>
-                </td>
-                <td>
-                    <button class="btn btn-block btn-sm {{boxClass index 'aux4' 'mid'}} js-btn-box" type="button">
-                        Mid
-                    </button>
-                </td>
-                <td>
-                    <button class="btn btn-block btn-sm {{boxClass index 'aux4' 'high'}} js-btn-box" type="button">
-                        High
-                    </button>
-                </td>
-            </tr>
-            {{/each}}
+                {{#each boxNames}}
+                    <tr class="{{#if mspBoxActive index}}success{{/if}}">
+                        <th>
+                            {{value}}
+                        </th>
+                        <td>
+                            <button class="btn btn-block btn-sm {{boxClass index 'aux1' 'low'}} js-btn-box"
+                                    type="button">
+                                Low
+                            </button>
+                        </td>
+                        <td>
+                            <button class="btn btn-block btn-sm {{boxClass index 'aux1' 'mid'}} js-btn-box"
+                                    type="button">
+                                Mid
+                            </button>
+                        </td>
+                        <td>
+                            <button class="btn btn-block btn-sm {{boxClass index 'aux1' 'high'}} js-btn-box"
+                                    type="button">
+                                High
+                            </button>
+                        </td>
+                        <td>
+                            <button class="btn btn-block btn-sm {{boxClass index 'aux2' 'low'}} js-btn-box"
+                                    type="button">
+                                Low
+                            </button>
+                        </td>
+                        <td>
+                            <button class="btn btn-block btn-sm {{boxClass index 'aux2' 'mid'}} js-btn-box"
+                                    type="button">
+                                Mid
+                            </button>
+                        </td>
+                        <td>
+                            <button class="btn btn-block btn-sm {{boxClass index 'aux2' 'high'}} js-btn-box"
+                                    type="button">
+                                High
+                            </button>
+                        </td>
+                        <td>
+                            <button class="btn btn-block btn-sm {{boxClass index 'aux3' 'low'}} js-btn-box"
+                                    type="button">
+                                Low
+                            </button>
+                        </td>
+                        <td>
+                            <button class="btn btn-block btn-sm {{boxClass index 'aux3' 'mid'}} js-btn-box"
+                                    type="button">
+                                Mid
+                            </button>
+                        </td>
+                        <td>
+                            <button class="btn btn-block btn-sm {{boxClass index 'aux3' 'high'}} js-btn-box"
+                                    type="button">
+                                High
+                            </button>
+                        </td>
+                        <td>
+                            <button class="btn btn-block btn-sm {{boxClass index 'aux4' 'low'}} js-btn-box"
+                                    type="button">
+                                Low
+                            </button>
+                        </td>
+                        <td>
+                            <button class="btn btn-block btn-sm {{boxClass index 'aux4' 'mid'}} js-btn-box"
+                                    type="button">
+                                Mid
+                            </button>
+                        </td>
+                        <td>
+                            <button class="btn btn-block btn-sm {{boxClass index 'aux4' 'high'}} js-btn-box"
+                                    type="button">
+                                High
+                            </button>
+                        </td>
+                    </tr>
+                {{/each}}
             {{else}}
-            <tr>
-                <td class="text-center" colspan="13">No connected device</td>
-            </tr>
+                <tr>
+                    <td class="text-center" colspan="13">No connected device</td>
+                </tr>
             {{/if}}
             </tbody>
         </table>

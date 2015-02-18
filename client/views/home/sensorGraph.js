@@ -57,20 +57,20 @@ Tracker.autorun(function () {
     if (Session.get('mspData') && tabInitialized) {
         rawImu = Session.get('mspData').rawImu;
         chartMixed.push([
-                            rawImu.acc.x, rawImu.acc.y, rawImu.acc.z,
-                            rawImu.gyro.x, rawImu.gyro.y, rawImu.gyro.z,
-                            rawImu.mag.x, rawImu.mag.y, rawImu.mag.z
-                        ]);
+            rawImu.acc.x, rawImu.acc.y, rawImu.acc.z,
+            rawImu.gyro.x, rawImu.gyro.y, rawImu.gyro.z,
+            rawImu.mag.x, rawImu.mag.y, rawImu.mag.z
+        ]);
         chartAcc.push([
-                          rawImu.acc.x, rawImu.acc.y, rawImu.acc.z
-                      ]);
+            rawImu.acc.x, rawImu.acc.y, rawImu.acc.z
+        ]);
 
         chartGyro.push([
-                           rawImu.gyro.x, rawImu.gyro.y, rawImu.gyro.z
-                       ]);
+            rawImu.gyro.x, rawImu.gyro.y, rawImu.gyro.z
+        ]);
 
         chartMag.push([
-                          rawImu.mag.x, rawImu.mag.y, rawImu.mag.z
-                      ]);
+            rawImu.mag.x, rawImu.mag.y, rawImu.mag.z
+        ]);
     }
 });
