@@ -3,62 +3,62 @@
         <div class="form-inline text-right command-panel">
 
             {{#if isTabActive '#tab-fly'}}
-            {{> homeCommandTabFly}}
+                {{> homeCommandTabFly}}
             {{/if}}
 
             {{#if isTabActive '#tab-rc-settings'}}
-            {{> homeCommandRcSettings }}
+                {{> homeCommandRcSettings }}
             {{/if}}
 
             {{#if mspIsDeviceConnected}}
 
-            <div class="input-group">
-                <div class="input-group-addon">
-                    Cycle time: <strong class="cycle-time">{{mspCycleTime}}ms</strong>
-                </div>
+                <div class="input-group">
+                    <div class="input-group-addon">
+                        Cycle time: <strong class="cycle-time">{{mspCycleTime}}ms</strong>
+                    </div>
 
-                <div class="input-group-addon">
-                    Connected to: <strong>{{mspConnectedDeviceName}}</strong>
-                </div>
+                    <div class="input-group-addon">
+                        Connected to: <strong>{{mspConnectedDeviceName}}</strong>
+                    </div>
 
-                <div class="input-group-btn">
-                    <button class="btn btn-danger js-btn-device-disconnect"
-                            data-loading-text="Disconnecting..."
-                            type="button">
-                        <i class="icon-io-switch"></i>
-                        Disconnect
-                    </button>
+                    <div class="input-group-btn">
+                        <button class="btn btn-danger js-btn-device-disconnect"
+                                data-loading-text="Disconnecting..."
+                                type="button">
+                            <i class="icon-io-switch"></i>
+                            Disconnect
+                        </button>
+                    </div>
                 </div>
-            </div>
-            <!-- .input-group -->
+                <!-- .input-group -->
 
             {{else}}
 
-            <div class="input-group">
-                <select class="form-control js-select-devices-list">
-                    {{#each mspAvailableDeviceNames}}
-                    <option value="{{name}}">{{name}} (v{{version}})</option>
-                    {{else}}
-                    <option value="">No available device</option>
-                    {{/each}}
-                </select>
+                <div class="input-group">
+                    <select class="form-control js-select-devices-list">
+                        {{#each mspAvailableDeviceNames}}
+                            <option value="{{name}}">{{name}} (v{{version}})</option>
+                        {{else}}
+                            <option value="">No available device</option>
+                        {{/each}}
+                    </select>
 
-                <div class="input-group-btn">
-                    <button class="btn btn-default js-btn-refresh-devices-list"
-                            data-loading-text="Refreshing"
-                            type="button">
-                        <i class="icon-io-spinner11"></i>
-                        Refresh
-                    </button>
-                    <button class="btn btn-primary js-btn-device-connect"
-                            data-loading-text="Connecting..."
-                            type="button">
-                        <i class="icon-io-connection"></i>
-                        Connect
-                    </button>
+                    <div class="input-group-btn">
+                        <button class="btn btn-default js-btn-refresh-devices-list"
+                                data-loading-text="Refreshing"
+                                type="button">
+                            <i class="icon-io-spinner11"></i>
+                            Refresh
+                        </button>
+                        <button class="btn btn-primary js-btn-device-connect"
+                                data-loading-text="Connecting..."
+                                type="button">
+                            <i class="icon-io-connection"></i>
+                            Connect
+                        </button>
+                    </div>
                 </div>
-            </div>
-            <!-- .input-group -->
+                <!-- .input-group -->
             {{/if}}
 
         </div>

@@ -74,6 +74,14 @@ homeEvents['click .js-btn-device-connect'] = function (e, template) {
                         Session.set('mspBoxNames', response);
                     }
                 });
+                Meteor.call('mspDeviceBox', deviceName, function (error, response) {
+                    if (error) {
+                        console.log('mspDeviceBox', error);
+                    } else {
+                        Session.set('mspBox', response);
+                        Session.set('mspBoxChanges', response);
+                    }
+                });
                 Session.set('mspConnectedDeviceName', deviceName);
                 notify('Device ' + deviceName + ' connected', 'success');
             }

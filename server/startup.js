@@ -74,6 +74,16 @@ Meteor.startup(function () {
         throw new Meteor.Error('Device is not connected');
     };
 
+    methods.mspSetDeviceRawRc = function (deviceName, rc) {
+        if (methods.mspIsDeviceAvailable(deviceName)) {
+            return Meteor.sync(function (callback) {
+                server.getDevice(deviceName).setRawRc(rc, {}, callback);
+            }).result;
+        }
+
+        throw new Meteor.Error('Device is not connected');
+    };
+
     Meteor.methods(methods);
 })
 ;
