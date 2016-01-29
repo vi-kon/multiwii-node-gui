@@ -4,8 +4,8 @@
             <div class="btn-group">
                 {{#if isTcpRcOn}}
                     {{#if mspIsBoxActive 'arm'}}
-                        <button class="btn btn-danger js-btn-arm"
-                                data-loading-text="Arming..."
+                        <button class="btn btn-danger js-btn-disarm"
+                                data-loading-text="Disarming..."
                                 type="button">
                             <i class="icon-io-upload"></i>
                             Disarm
@@ -18,15 +18,27 @@
                             Arm
                         </button>
                         <button class="btn btn-danger js-btn-stop-tcp-rc"
-                                data-loading-text="Reading..."
+                                data-loading-text="Stopping TCP RC..."
                                 type="button">
                             <i class="icon-io-connection"></i>
                             Stop TCP RC
                         </button>
                     {{/if}}
                 {{else}}
+                    <button class="btn btn-default js-btn-start-acc-calibration"
+                            data-loading-text="Calibrating..."
+                            type="button">
+                        <i class="icon-io-rocket"></i>
+                        Acc calibration
+                    </button>
+                    <button class="btn btn-default js-btn-start-mag-calibration"
+                            data-loading-text="Calibrating..."
+                            type="button">
+                        <i class="icon-io-earth"></i>
+                        Mag calibration
+                    </button>
                     <button class="btn btn-primary js-btn-start-tcp-rc"
-                            data-loading-text="Reading..."
+                            data-loading-text="Starting TCP RC..."
                             type="button">
                         <i class="icon-io-connection"></i>
                         Start TCP RC
