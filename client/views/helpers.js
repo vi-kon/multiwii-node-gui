@@ -18,14 +18,6 @@ Template.registerHelper('mspRcPercentage', function (stick) {
     return 0;
 });
 
-Template.registerHelper('mspBoxActive', function (boxIndex) {
-    if (Session.get('mspData')) {
-        return Session.get('mspData').status.boxActivation[boxIndex];
-    }
-
-    return false;
-});
-
 Template.registerHelper('mspRawImu', function (sensor, coord) {
     if (Session.get('mspData')) {
         return Session.get('mspData').rawImu[sensor][coord];
